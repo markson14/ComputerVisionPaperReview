@@ -461,7 +461,7 @@ box_clean = NMS(box)
 
 - 在最后3个stage中提取feature map，大小分别为32x32，16x16，8x8
 
-**模型效果:**
+**模型效果:** MS COCO
 
 ![Screen Shot 2019-05-30 at 2.46.37 pm](assets/Screen%20Shot%202019-05-30%20at%202.46.37%20pm.png)
 
@@ -470,6 +470,22 @@ box_clean = NMS(box)
 1. **Anchor box $x,y$ offset prediction**
 2. **Linear $x,y$ prediction instead of logistic**
 3. **Focal Loss**
+
+#### Generalized-IoU (CVPR 2019)
+
+```pseudocode
+input :Two arbitrary convex shapes: A,B ⊆ S ∈ R
+output :GIoU
+
+1. For A and B, find the smallest enclosing convex object C, where C ⊆ S ∈ R
+2. IoU = |A ∩ B| / |A ∪ B|
+3. GIoU = IoU - ｜C/（A ∪ B）｜ / ｜C｜  # 当A与B越来越远，（A ∪ B）会越来越小。所以｜C/（A ∪ B）｜会
+																				 趋向于｜C｜,右边的比值会接近1.GIoU的最小值会无限接近于1
+```
+
+- Lower bound for IoU
+
+![Screen Shot 2019-12-26 at 1.54.14 pm](assets/Screen%20Shot%202019-12-26%20at%201.54.14%20pm.png)
 
 #### V3 Gaussian
 
