@@ -69,6 +69,31 @@ Adam + NAG
   - 二阶动量NAG：$\hat V_t = \frac{V_t}{1-\beta_2}\hat m_t$
 - 当前下降梯度：$\eta_t = \alpha \cdot \frac{\hat m_t }{ \sqrt{\hat{V_t}}+\epsilon}$
 
+### LookAhead
+
+```pseudocode
+Require: Initial params phi_0, objective function L
+Require: Sync period k, slow weights step size alpha, optimizer A
+	for t = 1,2,... do
+		Sync theta_t_0 = phi_(t-1)
+		for i = 1,2,...,k do
+			sample minibatch of data d~D
+			theta_t_i = theta_t_(i-1) + A(L, theta_t_(i-1),d)
+		end for
+		Perform outer update phi_t = phi_(t-1) + alpha(theta_t_k - phi_(t-1))
+	end for 
+	return params phi
+```
+
+##### slow weights trajectory
+
+- 利用fast weights opt最近的proposal之余却也能保持之前的fast weights
+- 此举能够降低效果方差，属于final fast weights的exponential moving average(EMA)
+
+##### fast weights trajectory
+
+- 取决于基优化器在minibatch d上的表现效果
+
 ### Comparison
 
 - Adam收敛问题
