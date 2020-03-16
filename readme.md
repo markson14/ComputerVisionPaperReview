@@ -4,23 +4,23 @@
 
 ### Computer Vision
 
-- [Deep Learning Models](./papers/BackBoneModels.md)
-- [Object Detection Methods](./papers/ObjectDetection.md)
-- [Object Segmentation Methods](./papers/ObjectSegmentation.md)
-- [Face Everything](./papers/Face.md)
-- [Maths for CV](./papers/Maths.md)
+- [Deep Learning Models](./BackBoneModels.md)
+- [Object Detection Methods](./ObjectDetection.md)
+- [Object Segmentation Methods](./ObjectSegmentation.md)
+- [Face Everything](./Face.md)
+- [Maths for CV](./Maths.md)
 
 ### NLP
 
-- [BERT](./papers/Attention%20is%20all%20you%20need%20(Transformer).md)
+- [BERT](./Attention%20is%20all%20you%20need%20(Transformer).md)
 
 ### TTS
 
-- [TTS Summary](./papers/Text%20to%20Speech.md)
+- [TTS Summary](./Text%20to%20Speech.md)
 
-### [Deployment](./papers/Deployment.md)
+### [Deployment](./Deployment.md)
 
-### [Probability](./papers/概率%20Probability.md)
+### [Probability](./概率%20Probability.md)
 
 
 
