@@ -203,3 +203,4 @@ Panoptic FPN = Mask R-CNN + lighthead FPN branch semantic segmentation
 
 1. Dense prediction 稠密预测
 2. Context module for linked-message, using dilated convolutions to integrate multi-scale information 整合多尺度信息，上下文模块
+

@@ -519,22 +519,6 @@ box_clean = NMS(box)
 2. **Linear $x,y$ prediction instead of logistic**
 3. **Focal Loss**
 
-#### Generalized-IoU (CVPR 2019)
-
-```pseudocode
-input :Two arbitrary convex shapes: A,B ⊆ S ∈ R
-output :GIoU
-
-1. For A and B, find the smallest enclosing convex object C, where C ⊆ S ∈ R
-2. IoU = |A ∩ B| / |A ∪ B|
-3. GIoU = IoU - ｜C/（A ∪ B）｜ / ｜C｜  # 当A与B越来越远，（A ∪ B）会越来越小。所以｜C/（A ∪ B）｜会
-																				 趋向于｜C｜,右边的比值会接近1.GIoU的最小值会无限接近于1
-```
-
-- Lower bound for IoU
-
-![Screen Shot 2019-12-26 at 1.54.14 pm](assets/Screen%20Shot%202019-12-26%20at%201.54.14%20pm.png)
-
 #### V3 Gaussian
 
 **Loss Function:**
@@ -893,7 +877,53 @@ $$
   \end{cases}
   $$
 
-  
+
+---
+
+#### Generalized-IoU (CVPR 2019)
+
+```pseudocode
+input :Two arbitrary convex shapes: A,B ⊆ S ∈ R
+output :GIoU
+
+1. For A and B, find the smallest enclosing convex object C, where C ⊆ S ∈ R
+2. IoU = |A ∩ B| / |A ∪ B|
+3. GIoU = IoU - ｜C/（A ∪ B）｜ / ｜C｜  # 当A与B越来越远，（A ∪ B）会越来越小。所以｜C/（A ∪ B）｜会
+																				 趋向于｜C｜,右边的比值会接近1.GIoU的最小值会无限接近于1
+```
+
+- Lower bound for IoU
+
+![Screen Shot 2019-12-26 at 1.54.14 pm](assets/Screen%20Shot%202019-12-26%20at%201.54.14%20pm.png)
+
+---
+
+#### Distance-IoU Loss
+
+**Abstract**
+
+- GIoU and IoU在predicted box包含gt的时候无法正确反映出Loss的情况
+
+![Screen Shot 2020-03-19 at 2.36.42 pm](assets/Screen%20Shot%202020-03-19%20at%202.36.42%20pm.png)
+
+- GIoU通常会增大predicted box来缩小Loss_GIoU以达到收敛的目的
+
+![Screen Shot 2020-03-19 at 2.36.39 pm](assets/Screen%20Shot%202020-03-19%20at%202.36.39%20pm.png)
+
+- DIoU通过中心点距离和长宽比信息能够更有效提升效果和加速收敛，获得的predicted box更加贴合gt
+
+- DIoU能够整合进NMS里面作为辅助代替IoU
+
+**DIoU**
+
+1. 其中d是两个中心点的欧式距离
+2. C是两个box最小封闭矩形的斜边长
+
+$$
+DIoU = IoU -\frac{d}{c^2}
+$$
+
+![Screen Shot 2020-03-19 at 2.52.02 pm](assets/Screen%20Shot%202020-03-19%20at%202.52.02%20pm.png)
 
 ---
 
