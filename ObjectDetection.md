@@ -546,7 +546,22 @@ $$
 
 ![Screen Shot 2019-10-28 at 4.56.49 pm](assets/Screen%20Shot%202019-10-28%20at%204.56.49%20pm.png)
 
+#### Adaptive Spatial Feature Fusion (ASFF)
 
+**Abstract**
+
+- FPN的不同feature scales的特征不连续性是一个限制
+- 使用ASFF是不同scale的特征进行融合从而优化FPN的特征尺度不连续性
+
+![Screen Shot 2020-03-23 at 3.32.55 pm](assets/Screen%20Shot%202020-03-23%20at 3.32.55%20pm.png)
+
+**Operation**
+
+1. 对下采样特征图使用``conv 3x3,stride=2` 
+2. 上采样使用插值
+3. $\alpha ,\ \beta ,\ \gamma$ 是通过level1～3特征图经过 `conv 1x1` 获得
+
+![Screen Shot 2020-03-23 at 3.48.36 pm](assets/Screen%20Shot%202020-03-23%20at%203.48.36%20pm.png)
 
 ---
 
@@ -876,7 +891,6 @@ $$
   S_ie^{-\frac{iou(M,b_i)^2}{\sigma}}& {iou(M,b_i) \ge N_t}
   \end{cases}
   $$
-
 
 ---
 
