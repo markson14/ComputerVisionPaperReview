@@ -186,21 +186,3 @@ Panoptic FPN = Mask R-CNN + lighthead FPN branch semantic segmentation
 ### YOLACT Real-time Instance Segmentation (ICCV 2019)
 
 
-
----
-
----
-
-## Object dense classification module
-
-### Dilated CNN
-
-**Structure:**
-
-![Screen Shot 2019-09-04 at 6.17.29 pm](assets/Screen%20Shot%202019-09-04%20at%206.17.29%20pm.png)
-
-**Usage:**
-
-1. Dense prediction 稠密预测
-2. Context module for linked-message, using dilated convolutions to integrate multi-scale information 整合多尺度信息，上下文模块
-

@@ -1,6 +1,6 @@
 ## Optical Character Recognition
 
-### An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition 
+### An End-to-End Trainable Neural Network for Image-based Sequence Recognition and Its Application to Scene Text Recognition
 
 **Abstract**
 
@@ -16,3 +16,4 @@
 - Ordinary sequence learners require pre-segmented training data and post-processing to transform their outputs into label sequences, applicability is limited(输入需要裁剪，和后处理才能得到序列标签，用途有限)
 - Novel method for training RNNs to label unsegmented sequences directly. (可以直接训练无需切割输入的RNN序列)
 
+****

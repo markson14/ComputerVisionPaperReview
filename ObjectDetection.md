@@ -1,3 +1,5 @@
+![Object Detection](assets/Object%20Detection.png)
+
 ## Two-Stage
 
 ![Screen Shot 2019-08-19 at 4.15.33 pm](assets/Screen%20Shot%202019-08-19%20at%204.15.33%20pm.png)
@@ -312,6 +314,7 @@ FPN+RPN
 
 - 为了构建更加强壮的backbone，我们提出了一种模型组合的方法
 - 可以非常简便的应用在现有的detector上应用
+- 通过组合模型训练使模型之间相互监督，提升泛化能力
 
 ![Screen Shot 2020-03-13 at 4.37.32 pm](assets/Screen%20Shot%202020-03-13%20at%204.37.32%20pm.png)
 
@@ -894,7 +897,7 @@ $$
 
 ---
 
-#### Generalized-IoU (CVPR 2019)
+### Generalized-IoU (CVPR 2019)
 
 ```pseudocode
 input :Two arbitrary convex shapes: A,B ⊆ S ∈ R
@@ -912,7 +915,7 @@ output :GIoU
 
 ---
 
-#### Distance-IoU Loss
+### Distance-IoU Loss
 
 **Abstract**
 
