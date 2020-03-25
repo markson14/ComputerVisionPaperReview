@@ -16,17 +16,9 @@
 - [Face Everything](./Face.md)
 - [Maths for CV](./Maths.md)
 
-### NLP
-
-- [BERT](./Attention%20is%20all%20you%20need%20(Transformer).md)
-
-### TTS
-
-- [TTS Summary](./Text%20to%20Speech.md)
-
 ### [Deployment](./Deployment.md)
 
-### [Probability](./概率%20Probability.md)
+### [Maths](./Maths.md)
 
 
 
