@@ -5,7 +5,13 @@
 ### Computer Vision
 
 - [Deep Learning Models](./BackBoneModels.md)
+
+![Deep Nerual Network Block](assets/Deep%20Nerual%20Network%20Block.png)
+
 - [Object Detection Methods](./ObjectDetection.md)
+
+![Object Detection](assets/Object%20Detection.png)
+
 - [Object Segmentation Methods](./ObjectSegmentation.md)
 - [Face Everything](./Face.md)
 - [Maths for CV](./Maths.md)

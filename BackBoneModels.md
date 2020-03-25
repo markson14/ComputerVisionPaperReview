@@ -1,3 +1,5 @@
+![Deep Nerual Network Block](assets/Deep%20Nerual%20Network%20Block.png)
+
 ### Inception 
 
 #### Version 1
