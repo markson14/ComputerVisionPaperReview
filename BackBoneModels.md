@@ -1,4 +1,4 @@
-![Deep Nerual Network Block](assets/Deep%20Nerual%20Network%20Block.png)
+![Deep Nerual Network Block](Xmind/Deep%20Nerual%20Network%20Block.png)
 
 ### Inception 
 
@@ -390,3 +390,69 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
 
 - Our work concludes the role of IN and BN layers in CNNs: **IN introduces appearance invariance and improves generalization while BN preserves content information in discriminative features.** 
 - IN具有提高泛化性能，BN具有保证content的语义信息
+
+---
+
+### An Energy and GPU-Computation Efficient Backbone Network for Real-Time Object Detection (CVPR 2019)
+
+**Abstract**
+
+- 提出一个能够充分利用各层feature map且非常高效的网络。2x faster and 1.6x ～ 4.1x consumption reduced
+
+![Screen Shot 2020-03-31 at 10.40.45 am](assets/Screen%20Shot%202020-03-31%20at%2010.40.45%20am.png)
+
+**Factors of efficient Network Design**
+
+- 减少FLOPs和模型size并不代表减少GPU inference time & real energy consumption
+- 拥有同样FLOPs的ShuffleNet V2和MobileNet V2，前者比后者更快
+- SqueezeNet比AlexNet模型大小小50x，前者消耗能量比后者更多
+
+1. **Memory Access Cost**
+   - 能量消耗主要来源CNN的内存访问(memory access)
+   - 导致这个的主要原因是intermediate activation memory footprint，这归咎于filter parameter和intermediate feature maps大小。
+2. **GPU-Computation Efficiency**
+   - GPU并行计算能力在处理大tensor效果更好，所以拆分大的卷积操作会降低GPU计算效率。(7x7卷积拆分成3个3x3的卷积能够降低FLOPs，但是并不能加速训练)。这说明，在设计网络的时候，最好压缩网络层数。
+   - 尽管depthwise conv和1x1 conv能够降低FLOPs，这对GPU的计算效率有害。所以这里使用了FLOPs per second (FLOP/s)来计算真实的GPU inference time from total FLOPs。
+
+**Results**
+
+![Screen Shot 2020-03-31 at 11.12.16 am](assets/Screen%20Shot%202020-03-31%20at%2011.12.16%20am.png)
+
+![Screen Shot 2020-03-31 at 11.13.21 am](assets/Screen%20Shot%202020-03-31%20at%2011.13.21%20am.png)
+
+---
+
+### Stacked Hourglass Networks (ECCV 2016)
+
+**Abstract**
+
+- 能够通过不同的尺寸来巩固和获取最优的空间关系特征
+- 基于连续的上采样和下采样堆叠
+
+**Intermediate Supervision (中间监督)**
+
+- 大多数高阶特征只在低分辨率下出现，如果在网络上采样后进行监督，则无法在更大的全局上下文中重新评估这些特征。
+- hourglass的loss都是单独计算，这样能够对每个hourglass module进行再评估
+
+**Network**
+
+```python
+Class HourglassModule(nn.Module):
+		def __init__(self):
+        self.res_block = res_block()
+        self.maxpool = nn.MaxPool2d((2,2), stride=2)
+        self.upsample = nn.NearestInterpretation()
+      
+    def forward(self, x):
+      	x = self.maxpool(x)
+				out = self.res_block(x)
+        for _ in range(3):
+          x = self.res_block(x)
+        x = self.upsample(x)
+        res = x + out
+        return res
+```
+
+![Screen Shot 2020-04-02 at 3.36.30 pm](assets/Screen Shot 2020-04-02 at 3.36.30 pm.png)
+
+![Screen Shot 2020-04-02 at 3.35.21 pm](assets/Screen Shot 2020-04-02 at 3.35.21 pm.png)

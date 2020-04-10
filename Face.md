@@ -80,10 +80,10 @@
   - 假设object出现在图片的任意地方
   - 防止bp的时候出现梯度消失，因为权值的梯度是aggregrated的。
   - 对具有fixed spatial layout（固定空间分布）的图片难以学习
-- 局部权值共享（Conv）
-  - 对于分割后的图片，卷积层更好的学习high level feature
-
-
+- Local connected layers（Conv）
+  - 实际上，卷积运算应该称为shared-weights local connect convolution。因为他们共用一个卷积核的参数来做卷积。
+  - Local connect convolution 不共享权值，每卷积一个position，换一个新的卷积核。
+  - 增加非常多参数，可是每个卷积核能够记录一定的位置。这样对有空间规律性的特征有较强的效果，例如人脸。
 
 ---
 
@@ -291,12 +291,36 @@ $$
   
 - **Triplet**：(1) 需要更多iteration的迭代  (2) semi-hard sample mining 效率不高
 
-- **SphereFace**：训练unstable，softmax损失决定了训练过程，因为基于整数的多角度余量使目标logit曲线非常陡峭，从而阻碍了收敛。
-- **CosineFace**：直接将余弦余量损失加到目标logit上，与SphereFace相比，可以获得更好的性能，但允许更轻松地实现，并且减轻了softmax损失的联合监管的需求。
+- **L-Softmax**: 初次使用**角度距离**替代欧式距离，增大学习难度
 
-- **ArcFace**
+$$
+L-Softmax = -\ln \frac{e^{||W_i||x||cos \ m\theta_i}}{e^{||W_i||x||cos \ m\theta_i} + \sum_{j=1,j\ne i}^n e^{||W_j||x||cos \ \theta_j}}
+$$
+
+
+
+- **SphereFace (A-Softmax)**：将L-Softmax的$||W_i||$进行了归一化。训练unstable，softmax损失决定了训练过程，因为基于整数的多角度余量使目标logit曲线非常陡峭，从而阻碍了收敛。
+
+$$
+A-Softmax = -\ln \frac{e^{||x||cos \ m\theta_i}}{e^{||x||cos \ m\theta_i} + \sum_{j=1,j\ne i}^n e^{||x||cos \ \theta_j}}
+$$
+
+- **CosineFace (LM-Softmax)**：直接将余弦余量损失加到目标logit上，使得从衡量**角度距离**转变为**余弦距离**。与SphereFace相比，可以获得更好的性能，但允许更轻松地实现，并且减轻了softmax损失的联合监管的需求。
+
+$$
+LM-Softmax = -\ln \frac{e^{S(cos \ (\theta_{y_i})-m)}}{e^{S(cos \ (\theta_{y_i})-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
+$$
+
+- **AM-Softmax**: 对特征和参数进行L2正则化之后，在consine中引入余弦间隔。衡量**余弦距离**。同CosineFace同时间发布。
+
+$$
+AM-Softmax = -\ln \frac{e^{S(cos \ \theta_{y_i}-m)}}{e^{S(cos \ \theta_{y_i}-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
+$$
+
+- **ArcFace**: 对特征和参数进行L2正则化之后，在consine中引入角度间隔。衡量**角度距离**
 
   ![Screen Shot 2019-11-01 at 3.38.02 pm](assets/Screen%20Shot%202019-11-01%20at%203.38.02%20pm.png)
 
-![Screen Shot 2019-11-01 at 4.33.13 pm](assets/Screen%20Shot%202019-11-01%20at%204.33.13%20pm.png)
-
+$$
+ArcFace = -\ln \frac{e^{S(cos \ (\theta_{y_i}+m))}}{e^{S(cos \ (\theta_{y_i}+m))} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
+$$

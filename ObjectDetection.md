@@ -1,4 +1,4 @@
-![Object Detection](assets/Object%20Detection.png)
+![Object Detection](Xmind/Object%20Detection.png)
 
 ## Two-Stage
 
@@ -692,70 +692,7 @@ $$
 
 ---
 
-### Feature Selective Anchor-Free Module for Single-Shot Object Detection (CVPR 2019)
-
-:star:**Structure**:
-
-![Screen Shot 2019-03-26 at 7.18.46 PM](./assets/Screen%20Shot%202019-03-26%20at%207.18.46%20PM.png)
-
-- 内含anchor-based和anchor-free模块（A为anchor个数，K为class num）
-
-监督训练信号（supervision signal）:
-
-<img src="./assets/Screen%20Shot%202019-03-26%20at%207.21.50%20PM.png" alt="Screen Shot 2019-03-26 at 7.21.50 PM" style="zoom:50%;" />
-
-1. ground truth box：k
-2. ground truth box 坐标:$b = [x,y,w,h]$
-3. ground truth box 在第$l$层上的投影:$b_p^l=[x_p^l,y_p^l,w_p^l,h_p^l]$
-4. effective box：$b_e^l=[x_e^l,y_e^l,w_e^l,h_e^l]$，他表示$b_p^l$的一部分，缩放系数比例 $\epsilon_e = 0.2$
-5. ignoring box：$b_i^l=[x_i^l,y_i^l,w_i^l,h_i^l]$ ，他表示$b_p^l$的一部分，缩放系数比例 $\epsilon_i = 0.5$
-
-- Classification Output
-
-  - effective box 表示positive区域，如图白色部分所示。$b_i^l - b_e^l$ 这个部分ignoring区域不参与分类任务，如图灰色部分所示。剩余黑色部分为negative。分类任务是对每个像素做分类，考虑到正负样本不均衡，采用Focal Loss
-
-- Box Regression Output
-
-  - 输出4个offset map。这里取的是像素（i，j）与$b_p^l$ 四个边框的距离。gt bbox 只影响了$b_e^l$区域，所以这里（i，j）是该区域的所有像素。回归分支采用的是IOU Loss
-
-    ![Screen Shot 2019-03-26 at 7.16.00 PM](./assets/Screen%20Shot%202019-03-26%20at%207.16.00%20PM.png)
-
-- Online Feature Selection
-
-  ![Screen Shot 2019-05-25 at 10.23.05 am](assets/Screen%20Shot%202019-05-25%20at%2010.23.05%20am.png)
-  
-  1. 实例输入到金字塔所有层，求得IOU loss和focal loss的和
-  2. 选取loss和最小的层来学习实例得到feature map
-  3. 训练时，特征根据安排的实例进行更新。
-  4. 推理时，不需要进行特征更新，因为最适合学习的金字塔层自然输出最高置信分数。
-
-
-
----
-
-### <span id="keyp">Object as Points (Center Net) </span>
-
-**特点:**
-
-1. anchor 仅基于位置，而不是IOU
-
-   ![youz](assets/Screen%20Shot%202019-06-13%20at%201.57.36%20pm.png)
-
-2. 无需进行NMS操作，每个object只有一个positive anchor (from local peak in the keypoints heatmap)
-
-3. 输出的是大分辨率的图像来与原图做对比 (stride = 4)
-
-**Result:**
-
-![Screen Shot 2019-10-28 at 5.28.17 pm](assets/Screen%20Shot%202019-10-28%20at%205.28.17%20pm.png)
-
-![Screen Shot 2019-08-08 at 6.14.03 pm](assets/Screen%20Shot%202019-08-08%20at%206.14.03%20pm.png)
-
-
-
----
-
-### RepPoints
+- 4. 
 
 ---
 

@@ -1,6 +1,6 @@
-## Data Augmentation
+### Data Augmentation
 
-### GridMask Data Augmenation
+#### GridMask Data Augmenation
 
 **3 Categories of Augmentation**
 
@@ -8,7 +8,7 @@
 2. Color Distortion
 3. Information Dropping
 
-### Cutmix
+#### Cutmix
 
 
 
@@ -28,19 +28,19 @@
 
 ![Screen Shot 2020-03-10 at 4.23.50 pm](assets/Screen%20Shot%202020-03-10%20at%204.23.50%20pm-3828736.png)
 
-### Mixup
+#### Mixup
 
 $$
 \hat{x}= \lambda{x_i}+(1-\lambda)x_j \ \ where \ x_i,x_j \ are \ raw \ input\ vectors  \\
 \hat{y} = \lambda{y_i}+(1-\lambda)y_j \ \ where \ y_i,y_j \ are \ onehot \ label\ encoding
 $$
 
-### Cutout
+#### Cutout
+
+---
 
 
-
-
-## Attention is all you need (Transformer)
+### Attention is all you need (Transformer)
 
 ![Screen Shot 2019-04-15 at 10.00.38 am](assets/Screen%20Shot%202019-04-15%20at%2010.00.38%20am.png)
 
@@ -133,8 +133,9 @@ $$
 FNN(x)=W^T(max(0, W^Tx + b)) +b
 $$
 
+---
 
-## Bag of tricks for Image Classification with CNN
+### Bag of tricks for Image Classification with CNN
 
 ### Large-batch training
 
@@ -230,8 +231,9 @@ $$
 
 ![Screen Shot 2019-05-23 at 9.43.04 pm](assets/Screen%20Shot%202019-05-23%20at%209.43.04%20pm-8619091.png)
 
+---
 
-## Distill the Knowledge in a Neural Network
+### Distill the Knowledge in a Neural Network
 
 **Proposal**
 
@@ -305,8 +307,6 @@ $$
 
 ---
 
-
-
 ### Localization-aware Channel Pruning for Object Detection
 
 **Abstract**
@@ -320,8 +320,9 @@ $$
   - Obtain precise localisation info of default boxes by pixels alignment and enlarge the receptive fields of the default boxes when pruning shallow layers
   - Construct loss for obj det task to keep channels that contains both cls and reg
 
+---
 
-## DropBlock: A regularization method for convolutional networks
+### DropBlock: A regularization method for convolutional networks
 
 ![Screen Shot 2020-03-09 at 1.56.58 pm](./assets/Screen%20Shot%202020-03-09%20at%201.56.58%20pm.png)
 
@@ -335,7 +336,9 @@ $$
 
 ![Screen Shot 2020-03-09 at 2.24.15 pm](assets/Screen%20Shot%202020-03-09%20at%202.24.15%20pm.png)
 
-## Learning from Web Data with Memory Module
+---
+
+### Learning from Web Data with Memory Module
 
 **Abstract**
 
@@ -343,4 +346,24 @@ $$
 - background noise：由于背景或主体不明确导致的
 
 ![Screen Shot 2020-03-10 at 4.21.27 pm](assets/Screen%20Shot%202020-03-10%20at%204.21.27%20pm.png)
+
+---
+
+### Circle Loss: A Unified Perspective of Pair Similarity Optimization (CVPR 2020)
+
+**Abstract**
+
+- 两种基本范式，分别是使用标签类别和使用正负样本对标签进行学习
+- 使用类标签时，一般需要用分类损失函数（比如 softmax + cross entropy）优化样本和权重向量之间的相似度；使用样本对标签时，通常用度量损失函数（比如 triplet 损失）来优化样本之间的相似度。
+- 这两种学习方法之间并无本质区别，其目标都是最大化类内相似度（$s_p$）和最小化类间相似度（$s_n$）。从这个角度看，很多常用的损失函数（如 triplet 损失、softmax 损失及其变体）有着相似的优化模式: 它们会将$s_n$和$s_p$组合成相似度对 (similarity pair)来优化，并试图减小（$s_n - s_p$）。在（$s_n - s_p$）中，增大 等效于降低 。这种对称式的优化方法容易出现以下两个问题，如图 1 (a) 所示。
+
+![Screen Shot 2020-03-27 at 4.35.42 pm](assets/Screen%20Shot%202020-03-27%20at%204.35.42%20pm.png)
+
+---
+
+### Designing Network Design Spaces
+
+**Abstract**
+
+- 
 
