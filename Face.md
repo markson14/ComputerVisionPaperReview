@@ -1,37 +1,33 @@
-## Face Detection
+# Face Detection
 
-### Approaching Human Level Facial Landmark Localization by Deep Learning
+## Approaching Human Level Facial Landmark Localization by Deep Learning
 
-##### **难点**
+### **难点**
 
 1. 遮挡
 2. 低分辨率
 3. 光线
 4. 模糊
 
-##### **方法对比**
+### **方法对比**
 
 - 常用landmark方法：将landmark看成是一个回归问题 (regression-based)
 - 本文方法：CNN Cascade (deeplearning-based)
 
-##### **Coarse-to-fine**
+### **Coarse-to-fine**
 
 1. 侦测人脸，粗略初始化landmark
 2. 根据landmark进一步观测周遭area，refine landmark
 
 ![Screen Shot 2019-03-04 at 5.28.59 PM](assets/Screen%20Shot%202019-03-04%20at%205.28.59%20PM.png)
 
+## FacePoseNet：Making a Case for Landmark-free Face Alignment
 
-
-------
-
-### FacePoseNet：Making a Case for Landmark-free Face Alignment
-
-##### **Introduction**
+### **Introduction**
 
 - Facial landmark主要用作pipeline里面对齐，方便后续操作。但是更好的landmark并不意味更好的face alignment
 
-##### **Critique of facial landmark detection**
+### **Critique of facial landmark detection**
 
 - Landmark detection accracy measures
 
@@ -46,13 +42,9 @@
 
 - Effects of facial expression and shape on alignment
 
+## Deep Convolitional Network Cascade for Facial Point Detection (CVPR 2013)
 
-
-------
-
-### Deep Convolitional Network Cascade for Facial Point Detection (CVPR 2013)
-
-##### **Cascaded Convolutional networks**
+### **Cascaded Convolutional networks**
 
 ![Screen Shot 2019-03-11 at 5.08.34 PM](assets/Screen%20Shot%202019-03-11%20at%205.08.34%20PM.png)
 
@@ -74,7 +66,7 @@
 
   - 输入为level2输出关键点附近的裁剪图像，每两个CNN负责回归上一级输出的一个关键点
 
-##### **Locally-share Conv**
+### **Locally-share Conv**
 
 - 全局权值共享（Fully Connected Layer）
   - 假设object出现在图片的任意地方
@@ -85,21 +77,15 @@
   - Local connect convolution 不共享权值，每卷积一个position，换一个新的卷积核。
   - 增加非常多参数，可是每个卷积核能够记录一定的位置。这样对有空间规律性的特征有较强的效果，例如人脸。
 
----
+## CFAN (ECCV 2014)
 
-### CFAN (ECCV 2014)
-
-##### **introduction**
+### **introduction**
 
 - AAM无法照顾到复杂的人脸外观，归咎于single linear model 无法cover 所有non-linear variations in facial appearance
 
+## MTCNN (ECCV 2016)
 
-
----
-
-### MTCNN (ECCV 2016)
-
-##### **Inference Pipeline**
+### **Inference Pipeline**
 
 - Stage 1: Proposal Network 获得候选框和回归向量，之后再用**NMS**对多余候选框进行删减
   - Input：原图resize至 `12 x 12` 的过程中得到的图片金字塔，e.g. `原图，原图*factor，原图*factor^2`
@@ -116,7 +102,7 @@
 
 ![Screen Shot 2019-03-12 at 2.25.00 PM](assets/Screen%20Shot%202019-03-12%20at%202.25.00%20PM.png)
 
-##### **Training**
+### **Training**
 
 - 通过随机生成候选框将数据集分成四类：positive(IOU > 0.65)，negative（IOU < 0.3），partfaces（0.4<IOU<0.65），landmark
 - positive和negative参与到分类任务，positive和partface参与回归任务，landmark参与关键点回归任务
@@ -127,26 +113,24 @@
 
 ![Screen Shot 2019-03-12 at 3.32.26 PM](assets/Screen%20Shot%202019-03-12%20at%203.32.26%20PM.png)
 
-##### 偏移量offset标记
+### 偏移量offset标记
 
 - 截图在原图绝对坐标：`(x1, y1),  (x2,y2)`
 - 原图上label：`(xlu1, ylu1),  (xrd2, yrd2)`
 - Offset: `[(x1-xlu1)/x2-x1, (y1-ylu1)/y2-y1], [(x2-xrd2)/x2-x1, (y2-yrd2)/y2-y1]` 归一化之后的offset
   - 能够更好的收敛，抗resize
 
-##### OHEM(Online hard example mining)
+### OHEM(Online hard example mining)
 
 - 在每一个mini-batch中，对forward propagation的loss排序（高到低），选择前70%的用作反向传播。这样的作用是忽略easy sample对于模型的训练作用。
 
-**缺点**
+### **缺点**
 
 - 由于通过threshold筛选proposal，所以当人脸多了之后，很多时间会消耗在PNet上面
 
----
+## Single Shot Headless Detector (SSH)
 
-### Single Shot Headless Detector (SSH)
-
-##### **模型特点**
+### **模型特点**
 
 - 在前向网络传播中**同时**处理多尺度faces
 - 使用**skip connections**从early conv layers提取尺度偏小的face (目前常用做法)
@@ -154,13 +138,13 @@
 - Low memory foot-print；quick inference time
 - Context module：通过增大感受野达到增加上下文信息目的，为了减少conv参数，感受野的增大转为使用叠层conv的思路，figure 4说明
 
-##### **General Architecture**
+### **General Architecture**
 
 ![Screen Shot 2019-07-08 at 5.38.30 pm](./assets/Screen%20Shot%202019-07-08%20at%205.38.30%20pm.png)
 
 ![Screen Shot 2019-07-08 at 5.50.37 pm](./assets/Screen%20Shot%202019-07-08%20at%205.50.37%20pm.png)
 
-##### **Loss**
+### **Loss**
 
 - $L_c$ = face classification loss — standard multinomial logistic loss
 - $K$ 代表module，$A_k$ 代表anchors in module
@@ -169,23 +153,19 @@ $$
 \sum \frac{1}{N_k^c} \sum_{i \in A_k} l_c(p_i,g_i) +\lambda\sum \frac{1}{N_k^r} \sum_{i \in A_k} I(g_i =1)l_r(b_i,t_i)
 $$
 
+## RetinaFace（CVPR 2019）
 
-
----
-
-### RetinaFace（CVPR 2019）
-
-##### 背景
+### 背景
 
 - Face localisation 的精度和稳定性相对较差。
 
-##### 模型特点
+### 模型特点
 
 - Single Stage
 - 增加self-supervised分支来做像素级别3D预测
 - 在CPU上达到**VGA(640 x 480)**级别实时侦测
 
-##### Multitasking Loss
+### Multitasking Loss
 
 $$
 L= L_{cls}(p_i,\hat p_i) + \lambda_1 \hat p_iL_{box}(t_i,\hat t_i) + \lambda_2 \hat p_iL_{pts}(l_i,\hat l_i)+\lambda_3 \hat p_iL_{pixel} \\ where \ \ \{ \lambda_1 = 0.25, \lambda_2=0.1,\lambda_3 = 0.01 \}
@@ -196,7 +176,7 @@ $$
 3. $L_{pts}$ 是landmark regression。与2类似
 4. $L_{pixel}$ 是Dense regression loss
 
-##### Dense Regression Branch (self-supervised)
+### Dense Regression Branch (self-supervised)
 
 - 将2D的人脸映射到3D模型上，再将3D模型解码为2D图片(Mesh Decoder)，然后计算经过编解码的图片和原始图片的差别
   - 普通卷积参数：$Kernel_H \times Kernel_w \times Channel_{in} \times Channel_{out}$
@@ -206,7 +186,7 @@ $$
 
 - 3D解码至2D通过$face\R(D_{PST} , P_{cam}, P_{ill})$ , 分别是色彩范围，相机参数和灯光参数 
 
-##### Implement Details
+### Implement Details
 
 - **FPN: **from P2~P6，P2~P5是从Backbone output的feature map通过FPN计算得到，P6是从C5通过3x3 conv, stride=2，计算得到的
 
@@ -222,55 +202,73 @@ $$
 
 - **Data Augmentation: **使用随机裁剪来保证小脸的检测(根据短边 [0.3, 1])，同时使用random horizontal flip 和 色彩扭曲(colour distortion)
 
-##### Ablation Study
+### Ablation Study
 
 - **WIDER FACE face detection challenge**
 
   ![Screen Shot 2019-11-01 at 9.55.27 am](assets/Screen%20Shot%202019-11-01%20at%209.55.27%20am.png)
 
----
-
-##### Inference Efficiency
+### Inference Efficiency
 
 ![Screen Shot 2019-11-01 at 10.16.20 am](assets/Screen%20Shot%202019-11-01%20at%2010.16.20%20am.png)
 
+## RefineFace: Refinement Neural Network for High Performance Face Detection 
 
+### Abstract
 
----
+## CenterFace: Joint Face Detection and Alignment Using Face as Point (CVPR2020)
 
-### RefineFace: Refinement Neural Network for High Performance Face Detection 
+### Abstact
 
-##### 背景
+- One-stage anchor free方法实时高精度预测人脸box和landmark
+- This is achieved by: (a) learning face existing possibility by the semantic maps, (b) learning bounding box, offsets and five landmarks for each position that potentially contains a face.
 
+### Introduction
 
+- Anchor-based 方法的劣势：为了提升人脸召回率，会生成非常大量的anchor boxes，而且参数调整仅针对特定数据集，不够general
 
----
+### CenterFace
 
----
+- MobileNetV2 + FPN 作为backbone
 
-## Face Recognition
+- Face as Point: [x1,y1,x2,y2]为bbox，人脸中心点为bbox中心点
 
-### MobileFaceNet
+  - focal loss计算人脸分类loss
+  - position offsets用来矫正中心点从heatmap resize 回到原图时候的位移偏差，这里用smooth_l1 loss学习offset
 
-**Contribution**
+- Box and landmark: 仅用单个size的feauture计算来降低计算量。目前是为了学习一个transformation，
+  $$
+  (\hat h, \hat w) \ \ to \ center \ position \ (x,y) \\
+  \hat h = log(\frac{x_2}{R} - \frac{x_1}{R}) \\ 
+  \hat w = log(\frac{y_2}{R} - \frac{y_1}{R}) \\
+  lm_{\hat x}=\frac{lm_x}{box_w} - \frac{c_x}{box_w} \\ 
+  lm_{\hat y}=\frac{lm_y}{box_h} - \frac{c_y}{box_h} \\
+  L = L_c + \lambda_{off}L_{off} + \lambda_{box}L_{box}+\lambda_{lm}L_{lm}
+  $$
+
+# Face Recognition
+
+## MobileFaceNet
+
+### **Contribution**
 
 1. Use global depth wise convolution layer rather than a global average pooling layer or a fc layer to output a discriminative feature vector
 2. A class of face feature embedding CNNs
 
-**Weakness of Common Mobile Networks for Face Verification**
+### **Weakness of Common Mobile Networks for Face Verification**
 
 - 全局平均池化对FMap-end(output feature map of the last conv)采用平等权重。在实际中，脸部更偏向中心，边角权重可以弱化
 - Flatten FMap-end后的维度太高，所以采用了GAP。GAP**在人脸识别项目中**又会导致infer的准确率下降 (原因可能是人脸识别项目更加喜欢model overfiting，因为输入的图片非常干净规范，希望能够过拟合人和对应的标签)
 
-**Global Depthwise Convolution**
+### **Global Depthwise Convolution**
 
 - Replace it with a global depth wise conv(GDConv) + 1x1 Conv for channel reducing
 
 ![Screen Shot 2019-12-03 at 4.59.12 pm](assets/Screen%20Shot%202019-12-03%20at%204.59.12%20pm.png)
 
-### ArcFace: Additive Angular Margin Loss for Deep Face Recognition (CVPR2019)
+## ArcFace: Additive Angular Margin Loss for Deep Face Recognition (CVPR2019)
 
-##### 背景
+### 背景
 
 - **Center Loss** penalise deep feature 与相对应class中心，获得较好的类内紧凑性
 
@@ -282,7 +280,7 @@ $$
   
   ![Screen Shot 2019-11-01 at 3.15.11 pm](assets/Screen%20Shot%202019-11-01%20at%203.15.11%20pm.png)
 
-##### Loss Comparison
+### Loss Comparison
 
 - **Softmax**: (1) size of matrix 随着class数量线性增加 (2) 在人脸检测效果不行
   $$
@@ -324,3 +322,8 @@ $$
 $$
 ArcFace = -\ln \frac{e^{S(cos \ (\theta_{y_i}+m))}}{e^{S(cos \ (\theta_{y_i}+m))} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
 $$
+
+
+
+# Face Anti-spoofing
+

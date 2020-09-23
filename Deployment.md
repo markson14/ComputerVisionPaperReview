@@ -1,26 +1,30 @@
-## Model  Quantization (模型量化)
+# Model  Quantization (模型量化)
 
-### FP16, FP32, FP64
+## FP16, FP32, FP64
 
 Sign：0表示正数，1表示负数
 
-exponent：用于存储科学计算中的指数部分，采用移位（127+exponent）的二进制方式
+exponent：用于存储科学计算中的指数部分，采用移位（-127+exponent）的二进制方式
 
 fraction：用于存储尾数部分
 
-#### FP32 & FP64
+value = Sign x fraction x 2^exponent
+
+### FP32 & FP64
 
 - 主要用于计算
 
-**FP32** 
-
-Positive取值范围 $[2^{-149},infinity]$
+#### **FP32** (单精度浮点数)
 
 ![Screen Shot 2019-08-28 at 5.53.01 pm](assets/Screen%20Shot%202019-08-28%20at%205.53.01%20pm.png)
 
-**FP64**
+- Sign = 1
+- Exponent = -127 + (124) = -3 (补码)
+- Fraction = 1 + 2^-2 = 1.25
 
-Positive取值范围 $[2^{-1074},infinity]$
+#### **FP64**
+
+Positive取值范围 $[2.23e{-10^{-308}},1.79e10^{308}]$
 
 ![Screen Shot 2019-08-28 at 5.52.49 pm](assets/Screen%20Shot%202019-08-28%20at%205.52.49%20pm.png)
 

@@ -1,17 +1,159 @@
-# Maths
+# 概率
 
-## 概率
+## 极大似然估计
 
-#### **随机变量 random variable**
+假设我们有观测数据集$\mathcal{D}=\{x_i\}^n_{i=1}$, 如果我们希望通过预估参数 $\theta$ 来获得产生数据集的 $\mathcal{D}$ 近似分布 $P_{model}(x;\theta)$, 一个非常自然的想法是既然数据集  已经产 $\mathcal{D}$ 生了, 何不让分布 $P_{model}(x;\theta)$  最大化, 即使得分布 $P_{model}$ 以最大概率产生观测数据集 $ \mathcal{D}$ 中的数据, 这便是最大似然估计的指导思路. 具体地, 我们有
+$$
+\mathcal{L}(\Theta) = \prod_{i=1}^nP_{model}(x;\Theta) \\
+
+\hat\Theta = \underset{\Theta}{\operatorname{argmax}}\mathcal{L}(\Theta) \\
+$$
+由于多个概率只的累乘操作容易引起数值溢出的问题，可以求解起等价问题
+$$
+\mathcal{NNL}=-\sum{\log{P_{model}(x_i;\Theta)r\hat\Theta=\underset{\Theta}{\operatorname{argmin}}}\mathcal{NNL}(\Theta)}
+$$
+通常称之为负对数似然函数(Negative Log Likelihood)。如果我们将产生观测数据集 $\mathcal{D}=\{x_i\}^n_{i=1}$ 的分布记为 $X \backsim P_{data}$ ,由大数定理可得，当 $n \rightarrow \infty$ 时， 独立同分布的随机变量所产生的样本的算数平均值依概率收敛于期望，故上式可转化为
+$$
+\hat\Theta = \underset{\Theta}{\operatorname{argmin}} - \sum{\log{P_{model}(x_i;\Theta)}}r = \underset{\Theta}{\operatorname{argmin}} -\frac{1}{n}\sum{\log{P_{model}(x_i;\Theta)}} = \underset{\Theta}{\operatorname{argmin}} - E_{X\backsim P_{data}}\log(P_{model}(x_i;\Theta))
+$$
+待估函数 $\Theta$ 的求解过程其实是关于分布 $X \backsim P_{data}$ 的期望
+
+#### 信息论
+
+基本思想：一个大概率会发生的事件所拥有的信息量应该非常少，甚至为零。反之，一个小概率发生的事件其所拥有的信息量应该比较大。同时，两个独立事件的信息量具有可叠加性。为了满足这些对信息量进行度量的特征，信息论定义事件 $X = x$ 发生的字信息(self-information)为
+$$
+\mathcal{I}(x) = -log(P(X=x))
+$$
+度量了事件  $X = x$ 发生的信息量，而对于随机变量  $X \backsim P$ 所服从分布的总体信息量，我们使用期望
+$$
+\mathcal{H}(P) = E_{X \backsim P}\mathcal{I}(x) = -E_{X \backsim P}log(P(X=x))
+$$
+ 我们称之为香农熵(shannon entropy)，它描述了依据概率分布 $P$ 进行发生的随机事件所含有的信息量的期望值。既然我们现在可以度量一个概率分布所含有的信息量，一个很自然的想法， 我们可以对不同概率分布的香农熵进行比较, 从而描述不同概率分布之间的差异性。具体地，对于随机变量 $X$ 所服从的两个不同的概率分布 $P$ 和 $Q$，我们使用 KL散度(Kullback-Leibler divergence)来对其差异性进行描述。
+$$
+KL(P||Q) =E_{X \backsim P}log\frac{P(x)}{Q(x)} \\
+= E_{X \backsim P}logP(x) - E_{X \backsim P}logQ(x)
+$$
+KL散度具有非负性，在P和Q完全相等才会为零。注意，KL散度具有不对称性，即 $KL(P||Q) \neq KL(Q||P)$，描述的是分布 $Q$  逼近分布 $P$ 时所需要的额外信息量。
+$$
+\begin{equation}
+\begin{aligned}
+\mathcal{H}(P,Q) &= \mathcal{H}(P) + KL(P||Q) \\ 
+&= -E_{X \backsim P}logP(x) + E_{X \backsim P}logP(x) - E_{X \backsim P}logQ(x) \\ 
+&= - E_{X \backsim P}logQ(x)
+\end{aligned}
+\end{equation}
+$$
+$\mathcal{H}(P,Q)$ 称为分布 $P$ 和 $Q$ 的交叉熵(CrossEntropy)，当我们使用分布 $Q$ 去拟合分布 $P$ 时，是需要使二者的交叉熵尽量小，就能缩小其含有的信息量差异。所以，极大似然估计从信息论的角度来看，是在最小化生产观测数据的分布 $P_{data}$ 和模型分布 $P_{model}$ 之间的交叉熵，即
+$$
+\hat\Theta = \underset{\Theta}{\operatorname{argmin}}\mathcal{H}(P_{data}, P_{model}) = \underset{\Theta}{\operatorname{argmin}} - E_{X\backsim P_{data}}\log(P_{model}(x_i;\Theta))
+$$
+
+## 贝叶斯推断与最大后验估计
+
+贝叶斯学派认为参数其实也是随机变量，服从一定分布。我们可以将对参数的信念和经验用于关于参数的先验分布进行建模，并使用观测数据来对参数进行修正，最后使用休整后的参数分布来进行推断，这便是贝叶斯推断的大致过程。若观测数据集为 $\mathcal{D}=\{x_i\}^n_{i=1}$，在使用分布$\Theta \backsim P(\Theta)$ 表示我们对参数 $\Theta$ 的先验和信念时，我们希望通过数据集 $\mathcal{D}$ 来修正我们对 $\Theta$ 的预估，由贝叶斯公式：
+$$
+\begin{equation}
+\begin{aligned}
+\underbrace{P(\Theta|x_1,...,x_n)}_{后验} &= \frac{P(x_1,...,x_n|\Theta)P(\Theta)}{P(x_1,...,x_n)} \\
+&\propto \underbrace{P(x_1,...,x_n|\Theta)}_{似然度}\underbrace{P(\Theta)}_{先验}
+\end{aligned}
+\end{equation}
+$$
+由上式可知，先验的分布在观测数据不断加入得到似然度后得到修正，参数 $\Theta$ 会从不确定的值不断向部分确定的值靠拢，使得先验从一个蕴含高度不确定性的高熵状态，向其后验的低熵状态靠拢。有了参数的后验分布，就可以进行贝叶斯推断，具体的，对于新的数据 $x_{n+1}$
+$$
+P(x_{n+1}|x_1,...,x_n) = \int P(x_{n+1}|\Theta)P(\Theta|x_1,...,x_n)d\Theta
+$$
+在预估新数据 $x_{n+1}$ 的分布时，贝叶斯推断把参数的所有可能性都考虑进去，包括确定性较高的取值和确定性较低的取值，充分利用了所有参数的信息。由上式发现，贝叶斯推断时因为考虑了所有参数的分布信息，致使计算量相比极大似然估计会增大很多，在实际生产中难以应用。例如，当使用神经网络作为预估模型时，贝叶斯推断在参数上进行积分意味着参数每变化一次，神经网络便要做一次前向传播，计算代价非常高。所以我们退而求其次，只使用后验概率最大的参数作为参数的点估计，这样既能将对参数的先验信息代入到模型的推断中，又能节省计算资源：
+$$
+\begin{equation}
+\begin{aligned}
+\hat\Theta &= \underset{\Theta}{\operatorname{argmax}}\frac{P(x_1,...,x_n|\Theta)P(\Theta)}{P(x_1,...,x_n)} \\
+&\propto \underset{\Theta}{\operatorname{argmax}}P(x_1,...,x_n|\Theta)P(\Theta) \\
+&\propto \underset{\Theta}{\operatorname{argmax}}\prod_{i=1}^nP(x_i|\Theta)P(\Theta) \\
+&\propto \underset{\Theta}{\operatorname{argmax}}[\sum_{i=1}^n(logP(x_i|\Theta)+logP(\Theta))]
+\end{aligned}
+\end{equation}
+$$
+最大后验估计是在最大似然估计的基础上加了参数 $\Theta$ 的先验信息。当 $\Theta$ 的先验取均值为 $0$，协方差矩阵为 $\frac{1}{\lambda}I^2$，即 $\Theta \backsim \mathcal{N}(\Theta; 0, \frac{1}{\lambda}I^2)$，$\Theta$ 的先验正比于 $\lambda\Theta^T\Theta$，此时的先验分布为一个 $L_2$ 正则化项，所以极大似然估计加上一个 $L_2$ 正则化项可解释为最大后验估计的一个近似
+
+
+
+## SVM 和 感知机
+
+**一. 简单概括一下SVM：**
+
+SVM 是一种二类分类模型。它的基本思想是在特征空间中寻找间隔最大的分离超平面使数据得到高效的二分类，具体来讲，有三种情况（不加核函数的话就是个线性模型，加了之后才会升级为一个非线性模型）：
+
+- 当训练样本线性可分时，通过硬间隔最大化，学习一个线性分类器，即线性可分支持向量机；
+- 当训练数据近似线性可分时，引入松弛变量，通过软间隔最大化，学习一个线性分类器，即线性支持向量机；
+- 当训练数据线性不可分时，通过使用核技巧及软间隔最大化，学习非线性支持向量机。
+
+**二. SVM 为什么采用间隔最大化（与感知机的区别）：**
+
+当训练数据线性可分时，存在无穷个分离超平面可以将两类数据正确分开。感知机利用误分类最小策略，求得分离超平面，不过此时的解有无穷多个。线性可分支持向量机利用间隔最大化求得最优分离超平面，这时，解是唯一的。另一方面，此时的分隔超平面所产生的分类结果是最鲁棒的，对未知实例的泛化能力最强。
+
+**三. SVM的目标（硬间隔）：**
+
+有两个目标：第一个是**使间隔最大化**，第二个是**使样本正确分类，**由此推出目标函数：
+$$
+目标一 （最大化间隔）：\ \ \underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 \\
+目标二 （使样本分类正确）\ \ y_i(w^Tx_i+b)\ge1, i=1,2,3...
+$$
+稍微解释一下，w是超平面参数，目标一是从点到面的距离公式化简来的，具体不展开，目标二就相当于感知机，只是把大于等于0进行缩放变成了大于等于1，为了后面的推导方便。有了两个目标，写在一起，就变成了svm的终极目标：
+$$
+终极目标：\ \ \underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 \\
+s.t. \ y_i(w^Tx_i+b)\ge1, \forall i
+$$
+**四. 软间隔：**
+
+不管直接在原特征空间，还是在映射的高维空间，我们都假设样本是线性可分的。虽然理论上我们总能找到一个高维映射使数据线性可分，但在实际任务中，寻找一个合适的核函数核很困难。此外，由于数据通常有噪声存在，一味追求数据线性可分可能会使模型陷入过拟合，因此，**我们放宽对样本的要求，允许少量样本分类错误**。这样的想法就意味着对目标函数的改变，之前推导的目标函数里不允许任何错误，并且让间隔最大，现在给之前的目标函数加上一个误差，就相当于允许原先的目标出错，引入松弛变量 $\xi \ge 0$
+$$
+\underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 + \sum_{i=1}^{n}\xi_i
+$$
+那么这个松弛变量怎么计算呢，最开始试图用0，1损失去计算，但0，1损失函数并不连续，求最值时求导的时候不好求，所以引入合页损失（hinge loss）：
+$$
+L_{hinge}(z) = max(0, 1-z)
+$$
+理解起来就是，原先制约条件是保证所有样本分类正确，$y_i(w^Tx_i+b)\ge1, \forall i$，现在出现错误的时候，一定是这个式子不被满足了，即 $y_i(w^Tx_i+b)\le1, \forall 错误$ ，衡量一下错了多少呢？因为左边一定小于1，那就跟1比较，因为1是边界，所以用1减去 $y_i(w^Tx_i+b)$ 来衡量错误了多少，所以目标变为（正确分类的话损失为0，错误的话付出代价）：
+$$
+\underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 + \sum_{i=1}^nmax(0, 1-y_i(w^Tx_i+b))
+$$
+但这个代价需要一个控制的因子，引入C>0，惩罚参数，即：
+$$
+\underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 + C\sum_{i=1}^nmax(0, 1-y_i(w^Tx_i+b))
+$$
+可以想象，C越大说明把错误放的越大，说明对错误的容忍度就小，反之亦然。当C无穷大时，就变成一点错误都不能容忍，即变成硬间隔。实际应用时我们要合理选取C，C越小越容易欠拟合，C越大越容易过拟合。
+
+**所以软间隔的目标函数为：**
+$$
+\underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 + C\sum_{i=1}^n\xi_i\\
+s.t. \ y_i(w^Tx_i+b)\ge1-\xi_i\\ 
+\xi_i > 0, \forall i
+$$
+**SVM的优缺点：**
+
+**优点：**
+
+1. 由于SVM是一个凸优化问题，所以求得的解一定是全局最优而不是局部最优。
+2. 不仅适用于线性线性问题还适用于非线性问题(用核技巧)。
+3. 拥有高维样本空间的数据也能用SVM，这是因为数据集的复杂度只取决于支持向量而不是数据集的维度，这在某种意义上避免了“维数灾难”。
+4. 理论基础比较完善(例如神经网络就更像一个黑盒子)。
+
+**缺点：**
+
+1. 二次规划问题求解将涉及m阶矩阵的计算(m为样本的个数), 因此SVM不适用于超大数据集。(SMO算法可以缓解这个问题)
+2. 只适用于二分类问题。(SVM的推广SVR也适用于回归问题；可以通过多个SVM的组合来解决多分类问题)
+
+## 随机变量 random variable
 
 1. 离散随机变量
 2. 连续随机变量
 
-#### **联合概率 joint probability distribution**
+### 联合概率 joint probability distribution
 
 ![Screen Shot 2019-10-08 at 10.38.47 am](assets/Screen%20Shot%202019-10-08%20at%2010.38.47%20am-0502343.png)
 
-#### **边缘化 Marginal Distribution**
+### 边缘化 Marginal Distribution
 
 - 任意单位变量都可以通过联合概率分布上求其他变量的和(离散变量)或积分(连续变量)得到
   $$
@@ -26,7 +168,7 @@
   $$
   
 
-#### 条件概率 Conditional Probability
+### 条件概率 Conditional Probability
 
 - 给定y时x的条件概率 $Pr(x|y)$ ，“|” 可以理解为“给定”
 
@@ -38,29 +180,7 @@ $$
 Pr(x,y) = Pr(x|y)Pr(y)
 $$
 
-#### 贝叶斯公式 Bayesian
-
-$$
-Pr(y|x)Pr(x) = Pr(x|y)Pr(y)
-$$
-
-整理得到：
-$$
-\begin{equation}
-\begin{aligned}
-Pr(y|x) &= \frac{Pr(x|y)Pr(y)}{Pr(x)} \\ 
-&= \frac{Pr(x|y)Pr(y)}{\int Pr(x,y)dy} \\ 
-&=\frac{Pr(x|y)Pr(y)}{\int Pr(x|y)Pr(y)dy}
-\end{aligned}
-\end{equation}
-$$
-
-- $Pr(y|x)$：后验概率
-- $Pr(y)$：先验概率
-- $Pr(x|y)$：似然
-- $Pr(x)$：证据
-
-#### 独立性 Independency
+### 独立性 Independency
 
 - 若从变量x不能获得变量y，则x和y是独立的
   $$
@@ -72,7 +192,7 @@ $$
 Pr(x,y) = Pr(x|y)Pr(y) = Pr(x)Pr(y)
 $$
 
-#### 期望 Mean
+### 期望 Mean
 
 
 ## Optimizers
@@ -105,7 +225,7 @@ $$
 ### SGD-Momentum
 
 - 一阶动量：$m_t = \beta_1 \cdot m_{t-1} + (1-\beta_1) \cdot g_t$
-  -  一阶动量是哥哥时刻梯度方向的指数移动平均值，约等于最近$1/(1-\beta_1)$个时刻的梯度向量和的平均值
+  -  一阶动量是各个时刻梯度方向的指数移动平均值，约等于最近$1/(1-\beta_1)$个时刻的梯度向量和的平均值
 - 主要由此前累积的下降方向所决定
 
 ### AdaGrad
@@ -194,6 +314,8 @@ Require: Sync period k, slow weights step size alpha, optimizer A
 
 ## Batch Normalization
 
+![Screen Shot 2020-05-15 at 4.14.16 pm](assets/Screen%20Shot%202020-05-15%20at%204.14.16%20pm.png)
+
 **目的:**
 
 - 原论文：BN是为了减少 Internal Convariate Shift（训练集数据分布与预测集数据分布不一致）
@@ -219,7 +341,7 @@ $$
 \mu_{\beta} = \frac{1}{m} \sum_{i=1}^m(x_i)
 $$
 
-2. 计算上一层输出数据的标准差
+2. 计算上一层输出数据的方差(variance)
 
 $$
 \sigma_{\beta}^2 = \frac{1}{m} \sum_{i=1}^m (x_i - \mu_{\beta})^2
@@ -230,7 +352,7 @@ $$
 3. 归一化处理，得到
 
 $$
-\hat x_i = \frac{x_i + \mu_{\beta}}{\sqrt{\sigma_{\beta}^2} + \epsilon}
+\hat x_i = \frac{x_i - \mu_{\beta}}{\sqrt{\sigma_{\beta}^2 + \epsilon}}
 $$
 
 其中 ϵ 是为了避免分母为 0 而加进去的接近于 0 的很小值
@@ -247,9 +369,7 @@ $$
 
 注：上述是 BN 训练时的过程，但是当在投入使用时，往往只是输入一个样本，没有所谓的均值 μβ 和标准差 σ2β。此时，均值 μβ 是计算所有 batch μβ 值的平均值得到，标准差 σ2β 采用每个batch σ2β 的无偏估计得到。
 
----
-
-### Disharmony between DropOut and BN
+## Disharmony between DropOut and BN
 
 **Disharmony:** inconsistent behaviour of neural variance during the switch of networks’ state
 
@@ -259,7 +379,42 @@ $$
    - 在softmax层前加一层Dropout
 2. Change Dropout into a more vairance-stable form
 
+## Group Normalisation (ECCV 2018)
 
+### Abstract
+
+- BN的误差会随着batch size的减小而骤增
+- BN在训练detection，segmentation模型有着比较大的局限性
+- 提出Group Normalization，将channel分成group并计算均值和方差。做normalization
+- GN能够独立于batch计算，无需group conv，是单独的一个层
+
+### Formula
+
+- 类似Group Conv一样
+
+- G = 32 by default
+  $$
+  S_i = \{k|k_N = i_N,[\frac{k_C}{C/G}]=[\frac{i_C}{C/G}]\}
+  $$
+
+### Code
+
+```python
+def GroupNorm(x, gamma, beta, G, eps=1e−5):
+  """
+   x: input features with shape [N,C,H,W] 
+   gamma, beta: scale and offset, with shape [1,C,1,1] 
+   G: number of groups for GN
+  """ 
+  N, C, H, W = x.shape 
+  x = tf.reshape(x, [N, G, C // G, H, W])
+  mean, var = tf.nn.moments(x, [2, 3, 4], keep dims=True) 
+  x = (x − mean) / tf.sqrt(var + eps)
+  x = tf.reshape(x, [N, C, H, W]) 
+  return x ∗ gamma + beta
+```
+
+![Screen Shot 2020-05-15 at 4.34.13 pm](assets/Screen%20Shot%202020-05-15%20at%204.34.13%20pm.png)
 
 ## Loss
 
@@ -346,23 +501,18 @@ $\prod(P,Q)$ 是P，Q联合分布的集合。从中取(x,y)并计算这对样本
 
 ### 双线性
 
-- 已知Q11, Q12, Q21, Q22，要在其中插入一点P。得到P点，需要两次线性插值，即双线性插值
+- 双线性插值通常是为了获得目标位置的像素值，在RoI Align中是为了获得插值位置的value。
+  1. 经过作者实验，使用4点插值能获得最好的效果。每个点为RoI Align grid cells的三等分点。![Screen Shot 2020-06-05 at 5.35.39 pm](./assets/Screen%20Shot%202020-06-05%20at%205.35.39%20pm.png)
 
-![Screen Shot 2019-02-19 at 11.42.40 AM](./assets/Screen%20Shot%202019-02-19%20at%2011.42.40%20AM.png)
+  2. 其中一个点双线性插值公式：假设 p11 (x1, y1), p21 (x2, y1), p12 (x1, y2), p22(x2,y2)为4个已知点，p (x, y)为被插值点
 
-1. 首先求出插值R1,	R2
+  $$
+  P \approx \frac{y2-y}{y2-y1}(\frac{x2-x}{x2-x1}Q11 + \frac{x-x1}{x2-x1}Q21) + \frac{y - y1}{y2-y1}(\frac{x2-x}{x2-x1}Q12 + \frac{x-x1}{x2-x1}Q22)
+  $$
 
-![Screen Shot 2019-02-19 at 11.39.40 AM](./assets/Screen%20Shot%202019-02-19%20at%2011.39.40%20AM.png)
+  3. 将其余三个点使用BI插值得到后，取最大值就是RoI Align
 
-2. 由插值R1,  R2求出插值P
-
-![Screen Shot 2019-02-19 at 11.39.42 AM](./assets/Screen%20Shot%202019-02-19%20at%2011.39.42%20AM.png)
-
-3. 式子扩展化简即为
-
-![Screen Shot 2019-02-19 at 11.39.46 AM](./assets/Screen%20Shot%202019-02-19%20at%2011.39.46%20AM.png)
-
-4. 若选择一个坐标系使得Q点为(0, 0), (0, 1), (1, 0), (1, 1)， 那么插值公式可以化简为矩阵形式
+  ![roi_align](./assets/roi_align.gif)
 
 ## KL Divergence
 
@@ -614,3 +764,5 @@ $$
   2. Small-Margin Case: 噪音靠近decision boundary
   3. Large-Margin Case: 噪音原理decision boundary
   4. Random Noise: real world noise
+
+#### 
