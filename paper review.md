@@ -351,11 +351,8 @@ $$
 
 ![Screen Shot 2020-03-27 at 4.35.42 pm](assets/Screen%20Shot%202020-03-27%20at%204.35.42%20pm.png)
 
----
+## HOW MUCH POSITION INFORMATION DO CONVOLUTIONAL NEURAL NETWORKS ENCODE? (ICLR 2020)
 
-### Designing Network Design Spaces
-
-**Abstract**
+### Abstract
 
 - 
-

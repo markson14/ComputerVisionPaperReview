@@ -1,3 +1,84 @@
+# Deep Object Detection Survey
+
+## Selective Search
+
+```pseudocode
+Create ROI
+while ROI can merge:
+	calculate pixel info
+	merge two pixel if they are similar
+return ROI
+```
+
+![Screen Shot 2019-08-19 at 4.58.54 pm](assets/Screen%20Shot%202019-08-19%20at%204.58.54%20pm.png)
+
+## [Anchor Based - RPN](#rpn)
+
+## [Key-Point Based](#keyp)
+
+#### How Anchor affect the regression
+
+- **Question: 为什么需要用anchor去回归？使用随机参数回归，最后也应该能到GT，只不过收敛速度不一样。Anchor是如何影响预测框形状的？**
+
+- **Answer**: 
+
+  - 基于anchor的方法目的是**学习一个从anchor box到gt box的转换函数**，而不是将anchor box拿去回归
+
+  - 在parameterize过程中，使用anchor的宽高约束，让loss更加合理
+
+  - Maths:
+
+    **从候选框P回归到GT的变换过程**
+    $$
+    \hat{G_x} = P_wd_x(P)+P_x \\
+    \hat{G_y} = P_hd_y(P)+P_y \\
+    \hat{G_w} = P_w\exp(d_w(P)) \\ 
+    \hat{G_h} = P_h\exp(d_h(P))
+    $$
+    
+
+    **回归目标 $t_*$ 的计算**
+    $$
+    t_x = \frac{(G_x - P_x)}{P_w} \\
+    t_y = \frac{(G_y - P_y)}{P_h} \\
+    t_w = \log({\frac{G_w}{P_w}}) \\
+    t_h = \log({\frac{G_h}{P_h}}) \\
+    $$
+    **Using Ridge Regression in box reg**
+    $$
+    d_*(P) = w^T_* \phi_5(P), \ where \ w_* \ is \ learnable \\
+    w_* = \mathop{argmin}_\hat{w_*}\sum_i^N(t_*^i-\hat{w_x^T\phi_5(P^i)})^2+\lambda||\hat{w_*}||^2
+    $$
+    
+
+# Imbalance Problems in Object detection
+
+1. 类别不平衡：前景和背景不平衡、前景中不同类别输入包围框的个数不平衡；
+
+2. 尺度不平衡：输入图像和包围框的尺度不平衡，不同特征层对最终结果贡献不平衡；
+
+3. 空间不平衡：不同样本对回归损失的贡献不平衡、正样本IoU分布不平衡、目标在图像中的位置不平衡；
+
+4. 目标函数不平衡：不同任务（比如回归和分类）对全局损失的贡献不平衡。
+
+![Screen Shot 2019-09-10 at 3.48.42 pm](assets/Screen%20Shot%202019-09-10%20at%203.48.42%20pm.png)
+
+**Example of Imbalance problems**
+
+![Screen Shot 2019-09-10 at 3.51.02 pm](assets/Screen%20Shot%202019-09-10%20at%203.51.02%20pm.png)
+
+**Problems Based**
+
+![Screen Shot 2019-09-10 at 4.03.29 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.29%20pm.png)
+
+**Solution Based**
+
+![Screen Shot 2019-09-10 at 4.03.38 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.38%20pm.png)
+
+**Toy Example of Selection methods**
+
+![Screen Shot 2019-09-10 at 4.03.52 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.52%20pm.png)
+
 # Anchor Free
 
 ## CornerNet: Detecting Objects as Paired Key-points (ECCV 2018)
@@ -378,7 +459,7 @@
 
 ### Introduction
 
-先前的工作主要从1. Sampling的方法解决long-tail class的问题。2. loss的方法主要是解决前后景类别不均衡而提出的(focal loss)，在解决不同前景的长尾数据集中依旧是个难题
+先前的工作主要从1. Sampling的方法解决long-tail class的问题。2. loss的方法主要是解决前后景类别不均衡而提出的(focal loss，面临问题是前后景数量差距过大，前景object的classes number分类还是均衡的)，在解决不同前景的长尾数据集（前景object的classes number十分不均衡）中依旧是个难题
 
 我们主要的贡献有
 
@@ -395,4 +476,3 @@ $$
 
 1. 对于小于threshold的rare categories忽略作为负样本的抑制梯度更新
 2. 不忽略背景图片的梯度更新
-

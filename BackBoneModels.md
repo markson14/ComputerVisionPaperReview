@@ -229,6 +229,34 @@ $$
 
 ### v1
 
+```python
+class DepthSeperateConv(nn.Module):
+    def __init__(self, inp, oup, stride):
+        super(DepthSeperateConv, self).__init__()
+				self.depthwise_conv = nn.Conv2d(inp, 1, 3, 3, stride, bias=False)
+        self.pointwise_conv = nn.Conv2d(1, oup, 1, 1, stride, bias=False)
+        self.relu = nn.ReLU()
+        self.relu6 = nn.ReLU6()
+        self.bn = nn.BatchNorm2d()
+        
+        layers = [self.depthwise_conv, 
+                  self.bn, self.relu6, 
+                  self.pointwise_conv, 
+                  self.bn, 
+                  self.relu]
+        self.conv = nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.conv(x)
+        return x
+```
+
+
+
+- **普通卷积**: 
+  - 参数量：$D_K^2 \times M \times N$  Dk是kernel的size  M是input channel，N是output channel
+  - 计算量：$D_K^2 \times M \times N \times D_F^2$  Df是输入feature map的大小
+
 - **可分离卷积:** 将一个卷积层拆分成多个
 
   - 空间可分离卷积：比如3x3的kernel可以分成一个3x1和一个1x3
@@ -236,6 +264,14 @@ $$
   ![Screen Shot 2019-06-26 at 5.28.30 pm](./assets/Screen%20Shot%202019-06-26%20at%205.28.30%20pm-1541920.png)
 
   - 深度可分离卷积：`depth-separable conv = depthwise conv + pointwise conv`
+    - Depthwise
+      - 参数量：$D_K^2 \times M \times 1$  
+      - 计算量：$D_K^2 \times M \times 1 \times D_F^2$
+    - Pointwise
+      - 参数量：$1 \times M \times N$  
+      - 计算量：$1 \times M \times N \times D_F^2$
+    - 参数量：$D_K^2 \times M \times 1 + 1 \times M \times N$ 
+    - 计算量: $D_K^2 \times M \times 1 \times D_F^2 + 1 \times M \times N \times D_F^2$
 
 ![Screen Shot 2019-06-26 at 5.38.50 pm](./assets/Screen%20Shot%202019-06-26%20at%205.38.50%20pm.png)
 
@@ -432,7 +468,7 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
 #### **Intermediate Supervision (中间监督)**
 
 - 大多数高阶特征只在低分辨率下出现，如果在网络上采样后进行监督，则无法在更大的全局上下文中重新评估这些特征。
-- hourglass的loss都是单独计算，这样能够对每个hourglass module进行再评估
+- hourglass的loss都是**单独计算**，这样能够对每个hourglass module进行再评估。意思是每个hourglass中间还原的feature map都会参与最终loss的计算。
 
 #### **Network**
 
@@ -472,3 +508,16 @@ Class HourglassModule(nn.Module):
 
 - 在分类网络中，能够降低计算量，对精度提升很小
 - 在检测网络中，能够降低计算量，而且对精度提升巨大
+
+## AN IMAGE IS WORTH 16X16 WORDS: TRANSFORMERS FOR IMAGE RECOGNITION AT SCALE (Need to be finished)
+
+### Abstract
+
+### Related Work
+
+- Transformer是为机器翻译设计的，在超大语料库做训练，特定语料库finetune即可使用在特定任务中
+- 过去的transformer由于计算量的缘故，只用在local或相邻的pixel而不是global pixel。随着sparse transformer的发明，通过逼近的方法，self-attention可以用在图像领域
+
+### Vision Transformer(VIT)
+
+![Screen Shot 2020-10-04 at 9.04.02 pm](assets/Screen%20Shot%202020-10-04%20at%209.04.02%20pm.png)

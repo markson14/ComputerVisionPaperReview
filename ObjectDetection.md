@@ -31,7 +31,7 @@
 
 ## Fast R-CNN (ICCV 2015)
 
-```pseudocode
+```python
 def Fast_RCNN():
   feature_maps = backbone(image)
   ROIs = selective_search(feature_maps)		#expensive!
@@ -156,9 +156,22 @@ def Faster_RCNN():
 
 ![Screen Shot 2019-10-30 at 4.37.50 pm](assets/Screen%20Shot%202019-10-30%20at%204.37.50%20pm.png)
 
+## Spatial Pyramid Pooling in Deep Convolutional Networks for Visual Recognition
+
+### Abstract
+
+- 以往模型需要固定的input size，会对精度有影响
+- 生成 无需固定输入 的表征向量
+
+### Spatial Pyramid Pooling
+
+- CNN 输入可以是任意大小，但是fc layers需要固定大小。
+
+  ![Screen Shot 2020-10-21 at 3.59.37 pm](assets/Screen%20Shot%202020-10-21%20at%203.59.37%20pm.png)
+
 ## R-FCN: Region based Fully Convolutional Network (NeurIPS 2016)
 
-```python
+```js
 feature_maps = process(image)
 ROIs = region_proposal(feature_maps)
 score_maps = compute_score_map(feature_maps)
@@ -313,13 +326,35 @@ for ROI in ROIs:
 
 #### **Abstract**
 
-- 使用低的IOU阈值训练，会让模型产生带有噪音的预测；使用高阈值训练会导致模型效果差
-- 导致上述情况的两个原因：
-  1. 在训练的时候过拟合，导致成几何增长的positive samples消失
-  2. 推理的时候detector的最优解和假设输入的IOUs不一致
-- 我们提出Cascade R-CNN来解决上述问题。通过一系列级联的detector，前一个detector为后一个更高精度detector提供更好的输入支持。
+- 本文想要解决训练和推理的Gap：
+  1. 在训练的时候detector是以0.5 IoU来学习classes的类别。
+  2. 推理的时候detector无法得知哪个proposal应该对应哪个classes。
+  
+  ```mermaid
+  graph LR
+  	bb("Backbone") --feature maps--> RPN("RPN")
+  	RPN--region proposal-->detector("Detector")
+  	detector --> train{"Train?"}
+  	train --yes--> roi_head_train("RoIHeads")
+  	roi_head_train --IoU 0.5 sampled as positive to classes-->cls_train("Classifier")
+  	roi_head_train --IoU 0.5 sampled as positive to classes-->reg_train("Regressor")
+  	train --no-->roi_head_infer("RoIHeads")
+  	roi_head_infer --all proposal-->cls_infer("Classifier")
+  	roi_head_infer --all proposal-->reg_infer("Regressor")
+  
+  ```
+  
+  
 
+### Cascade R-CNN
 
+H1,H2,H3对于positive的IoU threshold逐渐增加
+
+![Screen Shot 2020-10-14 at 5.40.51 pm](assets/Screen%20Shot%202020-10-14%20at%205.40.51%20pm.png)
+
+#### Cascaded Bbox Regression
+
+cascaded bbox与iterative bbox不同，后者仅仅是一种后处理的方法，单纯的循环同一个regressor；前者是会初始化三个不同的regressor，并且参与训练和推理。
 
 # One-Stage
 
@@ -426,7 +461,7 @@ box_clean = NMS(box)
 - 24 Layers Convolutional layers followed by 2 fc layers
 - training method：pretrain conv on imagenet dataset
 
-#### **Loss：**
+###### **Loss：**
 
 - 使用均方差MSE，即网络输出$ S \times S \times (B * 5 + C)$ 维向量和GT对应的$ S \times S \times (B * 5 + C)$ 均方差
 - 每个格子的Loss：`center_MSE + scale_MSE + object_MSE + noobject_MSE + class_MSE` 一共5项
@@ -458,9 +493,15 @@ box_clean = NMS(box)
 
 #### **Direct Location Prediction:**
 
-- 将预测偏移量改编成预测grid cell的位置匹配行，将预测值限定在0-1范围内，增强稳定性。网络对feature map中的每个cell预测5个bounding boxes。对每一个bounding boxes，模型匹配5个预测值($t_x, t_y,t_w,t_h,t_o$)。采用聚类的方法选择boxes维度和直接预测bounding boxes中心位置将提高YOLO将近5%准确率。
+将预测偏移量改编成预测grid cell的位置匹配行，将预测值限定在0-1范围内(sigmoid for $t_x, t_y$; (-∞,0] for $t_w, t_h$)，增强稳定性。网络对feature map中的每个cell预测5个bounding boxes。对每一个bounding boxes，模型匹配5个预测值($t_x, t_y,t_w,t_h,t_o$)。采用聚类的方法选择boxes维度和直接预测bounding boxes中心位置将提高YOLO将近5%准确率。
 
 <img src="./assets/Screen%20Shot%202019-05-22%20at%203.59.41%20pm.png" alt="Screen Shot 2019-05-22 at 3.59.41 pm" style="zoom: 30%;" />
+
+#### pass through
+
+优化细粒度特征表示
+
+![Screen Shot 2020-10-14 at 6.26.30 pm](assets/Screen%20Shot%202020-10-14%20at%206.26.30%20pm.png)
 
 #### **Fine grained Feature(细粒度feature提取):**
 
@@ -525,11 +566,18 @@ $$
 
 #### **Result:**
 
-![Screen Shot 2019-10-28 at 4.56.49 pm](assets/Screen%20Shot%202019-10-28%20at%204.56.49%20pm.png)
+![Screen Shot 2019-10-28 at 4.56.49 pm](assets/Screen%20Shot%202019-10-28%20at%204.56.49%20pm.png) 
 
 ### V4
 
- 
+#### Bag of freebies(Training, data augmentation, loss)
+
+- Data augmentation: Cutout, cut mix, mixup
+- Loss：MSE，IoU loss，GIoU loss，DIoU loss，CIoU loss
+
+#### Bag of specials(plugin module, post-processing)
+
+- plugin modules：SPP，ASPP，RFB
 
 ## Adaptive Spatial Feature Fusion (ASFF)
 
@@ -843,87 +891,6 @@ $$
 # Evaluation Metrics
 
 ![Screen Shot 2019-10-30 at 2.32.03 pm](assets/Screen%20Shot%202019-10-30%20at%202.32.03%20pm.png)
-
-# Deep Object Detection Survey
-
-## Selective Search
-
-```pseudocode
-Create ROI
-while ROI can merge:
-	calculate pixel info
-	merge two pixel if they are similar
-return ROI
-```
-
-![Screen Shot 2019-08-19 at 4.58.54 pm](assets/Screen%20Shot%202019-08-19%20at%204.58.54%20pm.png)
-
-## [Anchor Based - RPN](#rpn)
-
-## [Key-Point Based](#keyp)
-
-#### How Anchor affect the regression
-
-- **Question: 为什么需要用anchor去回归？使用随机参数回归，最后也应该能到GT，只不过收敛速度不一样。Anchor是如何影响预测框形状的？**
-
-- **Answer**: 
-
-  - 基于anchor的方法目的是**学习一个从anchor box到gt box的转换函数**，而不是将anchor box拿去回归
-
-  - 在parameterize过程中，使用anchor的宽高约束，让loss更加合理
-
-  - Maths:
-
-    **从候选框P回归到GT的变换过程**
-    $$
-    \hat{G_x} = P_wd_x(P)+P_x \\
-    \hat{G_y} = P_hd_y(P)+P_y \\
-    \hat{G_w} = P_w\exp(d_w(P)) \\ 
-    \hat{G_h} = P_h\exp(d_h(P))
-    $$
-    
-
-    **回归目标 $t_*$ 的计算**
-    $$
-    t_x = \frac{(G_x - P_x)}{P_w} \\
-    t_y = \frac{(G_y - P_y)}{P_h} \\
-    t_w = \log({\frac{G_w}{P_w}}) \\
-    t_h = \log({\frac{G_h}{P_h}}) \\
-    $$
-    **Using Ridge Regression in box reg**
-    $$
-    d_*(P) = w^T_* \phi_5(P), \ where \ w_* \ is \ learnable \\
-    w_* = \mathop{argmin}_\hat{w_*}\sum_i^N(t_*^i-\hat{w_x^T\phi_5(P^i)})^2+\lambda||\hat{w_*}||^2
-    $$
-    
-
-# Imbalance Problems in Object detection
-
-1. 类别不平衡：前景和背景不平衡、前景中不同类别输入包围框的个数不平衡；
-
-2. 尺度不平衡：输入图像和包围框的尺度不平衡，不同特征层对最终结果贡献不平衡；
-
-3. 空间不平衡：不同样本对回归损失的贡献不平衡、正样本IoU分布不平衡、目标在图像中的位置不平衡；
-
-4. 目标函数不平衡：不同任务（比如回归和分类）对全局损失的贡献不平衡。
-
-![Screen Shot 2019-09-10 at 3.48.42 pm](assets/Screen%20Shot%202019-09-10%20at%203.48.42%20pm.png)
-
-**Example of Imbalance problems**
-
-![Screen Shot 2019-09-10 at 3.51.02 pm](assets/Screen%20Shot%202019-09-10%20at%203.51.02%20pm.png)
-
-**Problems Based**
-
-![Screen Shot 2019-09-10 at 4.03.29 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.29%20pm.png)
-
-**Solution Based**
-
-![Screen Shot 2019-09-10 at 4.03.38 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.38%20pm.png)
-
-**Toy Example of Selection methods**
-
-![Screen Shot 2019-09-10 at 4.03.52 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.52%20pm.png)
 
 # Referenece
 

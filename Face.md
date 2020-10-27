@@ -1,3 +1,5 @@
+![Face](Xmind/Face.png)
+
 # Face Detection
 
 ## Approaching Human Level Facial Landmark Localization by Deep Learning
@@ -155,6 +157,10 @@ $$
 
 ## RetinaFace（CVPR 2019）
 
+![Screen Shot 2020-10-09 at 10.54.28 am](assets/Screen%20Shot%202020-10-09%20at%2010.54.28%20am.png)
+
+![Screen Shot 2020-10-09 at 11.01.17 am](assets/Screen%20Shot%202020-10-09%20at%2011.01.17%20am.png)
+
 ### 背景
 
 - Face localisation 的精度和稳定性相对较差。
@@ -164,6 +170,11 @@ $$
 - Single Stage
 - 增加self-supervised分支来做像素级别3D预测
 - 在CPU上达到**VGA(640 x 480)**级别实时侦测
+
+### Context Modelling
+
+- 在欧式距离网格中增大感受野
+- 使用DCN增加非刚性变换建模能力
 
 ### Multitasking Loss
 
@@ -176,7 +187,9 @@ $$
 3. $L_{pts}$ 是landmark regression。与2类似
 4. $L_{pixel}$ 是Dense regression loss
 
-### Dense Regression Branch (self-supervised)
+### :star2:Dense Regression Branch (self-supervised)
+
+![Screen Shot 2020-10-09 at 11.01.00 am](assets/Screen%20Shot%202020-10-09%20at%2011.01.00%20am.png)
 
 - 将2D的人脸映射到3D模型上，再将3D模型解码为2D图片(Mesh Decoder)，然后计算经过编解码的图片和原始图片的差别
   - 普通卷积参数：$Kernel_H \times Kernel_w \times Channel_{in} \times Channel_{out}$
@@ -262,7 +275,9 @@ $$
 
 ### **Global Depthwise Convolution**
 
-- Replace it with a global depth wise conv(GDConv) + 1x1 Conv for channel reducing
+- Global Depthwise Convolution：kernel size与最后一层feature map大小相同
+
+- 使用global depthwise conv + 1x1 Conv来进行通道缩减 **替换** 全局平均池化
 
 ![Screen Shot 2019-12-03 at 4.59.12 pm](assets/Screen%20Shot%202019-12-03%20at%204.59.12%20pm.png)
 

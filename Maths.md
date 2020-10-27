@@ -10,7 +10,7 @@ $$
 $$
 由于多个概率只的累乘操作容易引起数值溢出的问题，可以求解起等价问题
 $$
-\mathcal{NNL}=-\sum{\log{P_{model}(x_i;\Theta)r\hat\Theta=\underset{\Theta}{\operatorname{argmin}}}\mathcal{NNL}(\Theta)}
+\mathcal{NLL}=-\sum{\log{P_{model}(x_i;\Theta)r\hat\Theta=\underset{\Theta}{\operatorname{argmin}}}\mathcal{NLL}(\Theta)}
 $$
 通常称之为负对数似然函数(Negative Log Likelihood)。如果我们将产生观测数据集 $\mathcal{D}=\{x_i\}^n_{i=1}$ 的分布记为 $X \backsim P_{data}$ ,由大数定理可得，当 $n \rightarrow \infty$ 时， 独立同分布的随机变量所产生的样本的算数平均值依概率收敛于期望，故上式可转化为
 $$
@@ -20,7 +20,7 @@ $$
 
 #### 信息论
 
-基本思想：一个大概率会发生的事件所拥有的信息量应该非常少，甚至为零。反之，一个小概率发生的事件其所拥有的信息量应该比较大。同时，两个独立事件的信息量具有可叠加性。为了满足这些对信息量进行度量的特征，信息论定义事件 $X = x$ 发生的字信息(self-information)为
+基本思想：一个大概率会发生的事件所拥有的信息量应该非常少，甚至为零。反之，一个小概率发生的事件其所拥有的信息量应该比较大。同时，两个独立事件的信息量具有可叠加性。为了满足这些对信息量进行度量的特征，信息论定义事件 $X = x$ 发生的自信息(self-information)为
 $$
 \mathcal{I}(x) = -log(P(X=x))
 $$
@@ -367,7 +367,7 @@ $$
 
 
 
-注：上述是 BN 训练时的过程，但是当在投入使用时，往往只是输入一个样本，没有所谓的均值 μβ 和标准差 σ2β。此时，均值 μβ 是计算所有 batch μβ 值的平均值得到，标准差 σ2β 采用每个batch σ2β 的无偏估计得到。
+注：上述是 BN 训练时的过程，但是当在投入使用时，往往只是输入一个样本，没有所谓的均值 $μ_β$ 和标准差 $σ^2_β$。此时，均值 $μ_β$ 是计算所有 batch $μ_β$ 值的平均值得到，标准差 $σ^2_β$ 采用每个batch $σ^2_β$的无偏估计得到。
 
 ## Disharmony between DropOut and BN
 

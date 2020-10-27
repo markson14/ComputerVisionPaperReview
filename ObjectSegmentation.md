@@ -77,6 +77,8 @@
 
 ![Screen Shot 2019-09-25 at 6.12.17 pm](assets/Screen%20Shot%202019-09-25%20at%206.12.17%20pm-9406422.png)
 
+#### Atrous sptial pyramid pooling
+
 ![Screen Shot 2019-09-25 at 6.12.33 pm](assets/Screen Shot 2019-09-25 at 6.12.33 pm-9406482.png)
 
 #### **Dense CRF:**
@@ -162,6 +164,47 @@ Panoptic FPN = Mask R-CNN + lighthead FPN branch semantic segmentation
 ![Screen Shot 2019-02-20 at 5.57.48 PM](./assets/Screen%20Shot%202019-02-20%20at%205.57.48%20PM.png)
 
 ## YOLACT Real-time Instance Segmentation (ICCV 2019)
+
+![Screen Shot 2020-09-28 at 3.30.56 pm](assets/Screen%20Shot%202020-09-28%20at%203.30.56%20pm.png)
+
+### Abstract
+
+- 将实例分割分成两个并行的分支
+  1. 生成候选mask
+  2. 预测单个mask相关性
+- 提出Fast NMS
+
+### Introduction
+
+- SOTA 实例分割网络强依赖feature localization来生成mask：使用“re-pooling”(roi-pooling/align) feature到bounding box并让mask predictor学习它。其本质上是顺序的，所以难以加速
+- FCIS可以做到one-stage，但强依赖后处理的效果，这也难以达到实时
+
+### YOLACT
+
+**RATIONALE(基本原理)**	masks是空间相关的，想近的pixel更加有可能为同一个instance。conv能够处理这种相关性，fc则不能。这导致一个问题，因为one-stage检测器都使用fc layer作为classes和localization的输出。Two-stage方式如Mask R-CNN则使用RoI-pooling保存了空间相关性。
+
+因此，这里将问题切分成两个。1. 使用fc layers输出语义信息vector；2. 使用conv输出空间信息masks。主要计算量集中在两者之间的整合，使用matrix multiplication
+
+**Prototype Generation**	使用protonet作为FCN，这里不计算loss，loss的back propagation会直接从最终的assembly mask loss得到。output to be unbounded，这允许网络对于prototypes产生更高的激活。因此，使用ReLU作为激活函数
+
+![Screen Shot 2020-09-28 at 4.32.31 pm](assets/Screen%20Shot%202020-09-28%20at%204.32.31%20pm.png)
+
+**Mask Coefficient**	简单的增加一个第三分支predicts k mask coefficient。每个anchor会得到4+c+k个相关参数。引入tanh作为k mask的激活函数，更加稳定
+
+![Screen Shot 2020-09-29 at 2.46.21 pm](assets/Screen%20Shot%202020-09-29%20at%202.46.21%20pm.png)
+
+**Mask Assembly**	single matrix multiplication：
+$$
+M = \sigma(PC^T)
+$$
+ 激活函数使用sigmoid。P(`h x w x k`), C(`n x k`)。**Loss**：使用BCE作为mask loss.
+
+### Fast NMS
+
+1. 由于IoU的对称性( $IoU(B_j, B_i) = IoU(B_i, B_j)$，可以使用**上三角化**得到一个对角线元素及以下三角元素都为0的IoU矩阵
+2. 后续操作与NMS相同
+
+![Screen Shot 2020-09-29 at 2.55.58 pm](assets/Screen%20Shot%202020-09-29%20at%202.55.58%20pm.png)
 
 ## Path Aggregation Network for Instance Segmentation (CVPR 2018)
 
