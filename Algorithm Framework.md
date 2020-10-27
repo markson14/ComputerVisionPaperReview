@@ -167,3 +167,80 @@ def BFS(start, target):
         # 划重点：更新步数在这里
         step += 1
 ```
+
+## Binary Search
+
+```python
+def binarySearch(nums: list, target: int):
+    left, right = 0, len(nums)-1
+    while ___ :
+        mid = left + (right - left) // 2
+        if nums[mid] == target:
+            ___
+        elif nums[mid] < target:
+            left = ___
+        elif nums[mid] > target:
+            right = ___
+    return ___
+```
+
+**分析二分查找的一个技巧是：不要出现 else，而是把所有情况用 else if 写清楚，这样可以清楚地展现所有细节**。本文都会使用 else if，旨在讲清楚，读者理解后可自行简化。
+
+其中 `___` 标记的部分，就是可能出现细节问题的地方，当你见到一个二分查找的代码时，首先注意这几个地方。后文用实例分析这些地方能有什么样的变化。
+
+另外声明一下，计算 mid 时需要防止溢出，代码中 `left + (right - left) / 2` 就和 `(left + right) / 2` 的结果相同，但是有效防止了 `left` 和 `right` 太大直接相加导致溢出。
+
+**为什么 while 循环的条件中是 <=，而不是 <**？
+
+答：因为初始化 `right` 的赋值是 `nums.length - 1`，即最后一个元素的索引，而不是 `nums.length`。
+
+这二者可能出现在不同功能的二分查找中，区别是：前者相当于两端都闭区间 `[left, right]`，后者相当于左闭右开区间 `[left, right)`，因为索引大小为 `nums.length` 是越界的。
+
+我们这个算法中使用的是前者 `[left, right]` 两端都闭的区间。**这个区间其实就是每次进行搜索的区间**。
+
+## Sliding Windows
+
+[76.最小覆盖子串](https://leetcode-cn.com/problems/minimum-window-substring)
+
+[567.字符串的排列](https://leetcode-cn.com/problems/permutation-in-string)
+
+[438.找到字符串中所有字母异位词](https://leetcode-cn.com/problems/find-all-anagrams-in-a-string)
+
+[3.无重复字符的最长子串](https://leetcode-cn.com/problems/longest-substring-without-repeating-characters)
+
+```python
+'''
+滑动窗口算法框架
+'''
+def slidingWindow(s: str, t: str) {
+		need, window = defaultdict(), defaultdict()
+    for c in t: need[c]+=1;
+    left, right = 0, 0 
+    valid = 0
+    while right < len(s):
+        # c 是将移入窗口的字符
+        char c = s[right];
+        # 右移窗口
+        right++;
+        # 进行窗口内数据的一系列更新
+        ...
+
+        '''
+        debug 输出的位置
+        ''' 
+        print("window: [%d, %d)\n", left, right);
+
+        # 判断左侧窗口是否要收缩
+        while window needs shrink:
+            # d 是将移出窗口的字符
+            char d = s[left]
+            # 左移窗口
+            left += 1
+            # 进行窗口内数据的一系列更新
+            ...
+```
+
+**其中两处** **`...`** **表示的更新窗口数据的地方，到时候你直接往里面填就行了**。
+
+而且，这两个 `...` 处的操作分别是右移和左移窗口更新操作，等会你会发现它们操作是完全对称的。这个算法技巧的时间复杂度是 O(N)，比字符串暴力算法要高效得多。
+
