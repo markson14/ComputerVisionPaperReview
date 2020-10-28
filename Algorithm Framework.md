@@ -71,21 +71,66 @@ class NTreeNode:
 
 **明确 base case -> 明确「状态」-> 明确「选择」 -> 定义 dp 数组/函数的含义**。
 
-```python
-# 初始化 base case
-dp[0][0][...] = base
-# 进行状态转移
-for 状态1 in 状态1的所有取值：
-    for 状态2 in 状态2的所有取值：
-        for ...
-            dp[状态1][状态2][...] = 求最值(选择1，选择2...)
-```
-
-方法：
+**方法：**
 
 - **暴力递归**
 - **带memory的递归（自顶向下）**
 - **dp数组迭代解法（自底向上）**
+
+---
+
+### Stock Problem
+
+[买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/)
+
+[买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+
+[买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+
+[买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
+
+[最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+
+[买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+
+```mermaid
+graph LR;
+	HaveStock --sell--> NoStock
+	HaveStock --rest--> HaveStock
+	NoStock --rest--> NoStock
+	NoStock --buy--> HaveStock
+	
+	
+```
+
+
+
+```python
+'''
+dp[i][k][0 or 1]
+0 <= i <= n-1, 1 <= k <= K
+n 为天数，大 K 为最多交易数
+此问题共 n × K × 2 种状态，全部穷举就能搞定。
+'''
+# base case
+for k in range(k+1):
+  dp[0][k][0] = 0
+  dp[0][k][1] = -prices[0]
+# iteration
+for 0 <= i < n:
+    for 1 <= k <= K:
+        for s in {0, 1}:
+            dp[i][k][s] = max(buy, sell, rest)
+return max(dp[-1][k][0])
+```
+
+
+
+---
+
+### Rubbery Problem
+
+
 
 ## Backtrack
 
@@ -243,4 +288,3 @@ def slidingWindow(s: str, t: str) {
 **其中两处** **`...`** **表示的更新窗口数据的地方，到时候你直接往里面填就行了**。
 
 而且，这两个 `...` 处的操作分别是右移和左移窗口更新操作，等会你会发现它们操作是完全对称的。这个算法技巧的时间复杂度是 O(N)，比字符串暴力算法要高效得多。
-
