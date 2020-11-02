@@ -1,5 +1,9 @@
 # Algorithm Framework
 
+## Trick
+
+:fire: **LRU_cache可作用于递归函数，取代memo**
+
 ## Data Structure
 
 ### Linked List
@@ -55,6 +59,92 @@ class NTreeNode:
       self.traverse(child)
 ```
 
+**写树相关的算法，简单说就是，先搞清楚当前`root`节点该做什么，然后根据函数定义递归调用子节点**，递归调用会让孩子节点做相同的事情。
+
+:fire:**递归算法的关键要明确函数的定义，相信这个定义，而不要跳进递归细节。**
+
+[116. 填充二叉树节点的右侧指针](https://leetcode-cn.com/problems/populating-next-right-pointers-in-each-node/)
+
+**二叉树的问题难点在于，如何把题目的要求细化成每个节点需要做的事情**，但是如果只依赖一个节点的话，肯定是没办法连接「跨父节点」的两个相邻节点的。那么，我们的做法就是增加函数参数，一个节点做不到，我们就给他安排两个节点，「将每一层二叉树节点连接起来」可以细化成「将每两个相邻节点都连接起来」：
+
+```python
+class Solution:
+    def connect_two_node(self, node1, node2):
+      	'''
+      	增加参数来帮助递归
+      	'''
+        if not node1 or not node2:
+            return
+        node1.next = node2
+        # 状态1：节点1的左右连接
+        self.connect_two_node(node1.left, node1.right)
+        # 状态2：节点2的左右连接
+        self.connect_two_node(node2.left, node2.right)
+        # 状态3：节点1的右与节点2左连接
+        self.connect_two_node(node1.right, node2.left)
+
+    def connect(self, root: 'Node') -> 'Node':
+        if not root:
+            return
+        self.connect_two_node(root.left, root.right)
+        return root
+```
+
+[114. 二叉树展开链表](https://leetcode-cn.com/problems/flatten-binary-tree-to-linked-list/)
+
+```python
+def flatten(self, root: TreeNode) -> None:
+    """
+    Do not return anything, modify root in-place instead.
+    """
+    if not root:
+        return
+
+    self.flatten(root.left)
+    self.flatten(root.right)
+
+    l = root.left
+    r = root.right
+
+    root.left = None
+    root.right = l
+
+    p = root
+    while p.right:
+        p = p.right
+    p.right = r
+    return root
+```
+
+你看，这就是递归的魅力，你说`flatten`函数是怎么把左右子树拉平的？不容易说清楚，**但是只要知道`flatten`的定义如此，相信这个定义，让`root`做它该做的事情，然后`flatten`函数就会按照定义工作。**
+
+另外注意递归框架是后序遍历，因为我们要先拉平左右子树才能进行后续操作。
+
+[106.从中序遍历序列和后序遍历构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/description/)
+
+递归解决，主要侧重当前节点的操作逻辑，然后递归解决子节点。
+
+```python
+def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
+    '''
+    
+    '''
+    if not inorder:
+        return None
+    root = TreeNode()
+    # 确定root节点，和在inorder index
+    root.val = postorder[-1]
+    idx = inorder.index(root.val)
+		# 确保left_chunk和right_chunk的大小
+    left_chunk_sz = len(inorder[:idx])
+    right_chunk_sz = len(inorder[idx+1:])
+		# 确定left，right在各自order下的index，递归解决
+    root.left = self.buildTree(inorder[:idx], postorder[:left_chunk_sz])
+    root.right = self.buildTree(
+        inorder[idx+1:], postorder[left_chunk_sz:left_chunk_sz+right_chunk_sz])
+    return root
+```
+
 ## Dynamic Programming
 
 **首先，动态规划问题的一般形式就是求最值**。动态规划其实是运筹学的一种最优化方法，只不过在计算机问题上应用比较多，比如说让你求**最长**递增子序列呀，**最小**编辑距离呀等等。
@@ -69,7 +159,7 @@ class NTreeNode:
 
 以上提到的**重叠子问题、最优子结构、状态转移方程**就是动态规划三要素。具体什么意思等会会举例详解，但是在实际的算法问题中，**写出状态转移方程是最困难的**，这也就是为什么很多朋友觉得动态规划问题困难的原因，我来提供我研究出来的一个思维框架，辅助你思考状态转移方程：
 
-**明确 base case -> 明确「状态」-> 明确「选择」 -> 定义 dp 数组/函数的含义**。
+**明确「状态」-> 明确「选择」 -> 明确 base case -> 定义 dp 数组/函数的含义**。
 
 **方法：**
 
@@ -78,6 +168,58 @@ class NTreeNode:
 - **dp数组迭代解法（自底向上）**
 
 ---
+
+### Subsequence Problem
+
+
+
+### Greedy
+
+### Knapsack Problem
+
+#### 0-1 Knapsack
+
+所以状态有两个，就是「背包的容量」和「可选择的物品」并且可选择物品的数量是**「严格限制」**。 选择就是「装进背包」或者「不装进背包」。
+
+- `dp[i][w]`的定义如下：对于前`i`个物品，当前背包的容量为`w`，这种情况下可以装的最大价值是`dp[i][w]`。
+
+- base case 就是`dp[0][..] = dp[..][0] = 0`
+
+```pseudocode
+int dp[N+1][W+1]
+dp[0][..] = 0
+dp[..][0] = 0
+
+for i in [1..N]:
+    for w in [1..W]:
+        dp[i][w] = max(
+            把物品 i 装进背包,
+            不把物品 i 装进背包
+        )
+return dp[N][W]
+```
+
+#### Unbounded Knapsack
+
+有一个背包，最大容量为`amount`，有一系列物品`coins`，每个物品的重量为`coins[i]`，**「每个物品数量无限」**。请问有多少种方法，能够把背包恰好装满？
+
+这个问题和我们前面讲过的两个背包问题，有一个最大的区别就是，每个物品的数量是无限的，这也就是传说中的「**完全背包问题**」，没啥高大上的，无非就是状态转移方程有一点变化而已。
+
+- `dp[i][j]`的定义如下：若只使用前`i`个物品，当背包容量为`j`时，有`dp[i][j]`种方法可以装满背包。
+
+- base case 为`dp[0][..] = 0， dp[..][0] = 1`。因为如果不使用任何硬币面值，就无法凑出任何金额；如果凑出的目标金额为 0，那么“无为而治”就是唯一的一种凑法。
+
+```pseudocode
+int dp[N+1][amount+1]
+dp[0][..] = 0
+dp[..][0] = 1
+
+for i in [1..N]:
+    for j in [1..amount]:
+        把物品 i 装进背包,
+        不把物品 i 装进背包
+return dp[N][amount]
+```
 
 ### Stock Problem
 
@@ -124,11 +266,105 @@ for 0 <= i < n:
 return max(dp[-1][k][0])
 ```
 
----
+### EGG Problem
 
-### Rubbery Problem
+[887.鸡蛋掉落](https://leetcode-cn.com/problems/super-egg-drop/)
 
+#### 二分搜索 + 递归 + 剪枝
 
+我们在第`i`层楼扔了鸡蛋之后，可能出现两种情况：鸡蛋碎了，鸡蛋没碎。**注意，这时候状态转移就来了**：
+
+- **如果鸡蛋碎了**，那么鸡蛋的个数`K`应该减一，搜索的楼层区间应该从`[1..N]`变为`[1..i-1]`共`i-1`层楼；
+
+- **如果鸡蛋没碎**，那么鸡蛋的个数`K`不变，搜索的楼层区间应该从 `[1..N]`变为`[i+1..N]`共`N-i`层楼。
+
+因为我们要求的是**最坏情况**下扔鸡蛋的次数，所以鸡蛋在第`i`层楼碎没碎，取决于那种情况的结果**更大**
+
+递归的 **base case** 很容易理解：
+
+- 当楼层数`N`等于 0 时，显然不需要扔鸡蛋；
+- 当鸡蛋数`K`为 1 时，显然只能线性扫描所有楼层
+
+```python
+'''
+[状态]：鸡蛋个数K，需要测试楼层N
+[选择]：去哪层楼扔鸡蛋
+返回当前状态最优结果
+'''
+def superEggDrop(self, K: int, N: int) -> int:
+    memo = dict()
+    def dp(K, N):
+        if K == 1:
+            return N
+        if N == 0:
+            return 0
+        if (K, N) in memo:
+            return memo[(K, N)]
+        res = float('INF')
+        lo, hi = 1, N
+        # 二分搜索优化
+        while lo <= hi:
+            mid = lo + (hi - lo)//2
+            broke = dp(K-1, mid-1)
+            not_broke = dp(K, N-mid)
+            # 如果鸡蛋碎了，往下继续搜
+            if broke > not_broke:
+                hi = mid-1
+                res = min(res, broke+1)
+            # 反之，往上搜
+            else:
+                lo = mid+1
+                res = min(res, not_broke+1)
+        memo[(K, N)] = res
+        return res
+    return dp(K, N)
+```
+
+#### DP
+
+现在，我们稍微修改`dp`数组的定义，**确定当前的鸡蛋个数和最多允许的扔鸡蛋次数，就知道能够确定`F`的最高楼层数**。
+
+```python
+dp[k][m] = n
+# 当前有 k 个鸡蛋，可以尝试扔 m 次鸡蛋
+# 这个状态下，最坏情况下最多能确切测试一栋 n 层的楼
+
+# 比如说 dp[1][7] = 7 表示：
+# 现在有 1 个鸡蛋，允许你扔 7 次;
+# 这个状态下最多给你 7 层楼，
+# 使得你可以确定楼层 F 使得鸡蛋恰好摔不碎
+# （一层一层线性探查嘛）
+```
+
+**1、无论你在哪层楼扔鸡蛋，鸡蛋只可能摔碎或者没摔碎，碎了的话就测楼下，没碎的话就测楼上**。
+
+**2、无论你上楼还是下楼，总的楼层数 = 楼上的楼层数 + 楼下的楼层数 + 1（当前这层楼）**。
+
+根据这个特点，可以写出下面的状态转移方程：
+
+```python
+dp[k][m] = dp[k][m-1] + dp[k-1][m-1] + 1
+```
+
+**`dp[k][m - 1]`就是楼上的楼层数**，因为鸡蛋个数`k`不变，也就是鸡蛋没碎，扔鸡蛋次数`m`减一；
+
+**`dp[k - 1][m - 1]`就是楼下的楼层数**，因为鸡蛋个数`k`减一，也就是鸡蛋碎了，同时扔鸡蛋次数`m`减一。
+
+PS：这个`m`为什么要减一而不是加一？之前定义得很清楚，这个`m`是一个允许的次数上界，而不是扔了几次。
+
+```python
+'''
+动态规划
+'''
+def superEggDrop(self, K: int, N: int) -> int:
+    m = 0
+    dp = [[0 for _ in range(N+1)] for _ in range(K+1)]
+    while dp[K][m] < N:
+        m += 1
+        for i in range(1, K+1):
+            dp[i][m] = dp[i][m-1] + dp[i-1][m-1] + 1
+    return m
+```
 
 ## Backtrack
 
@@ -286,3 +522,119 @@ def slidingWindow(s: str, t: str) {
 **其中两处** **`...`** **表示的更新窗口数据的地方，到时候你直接往里面填就行了**。
 
 而且，这两个 `...` 处的操作分别是右移和左移窗口更新操作，等会你会发现它们操作是完全对称的。这个算法技巧的时间复杂度是 O(N)，比字符串暴力算法要高效得多。
+
+## Intervals Problem
+
+[1288.删除被覆盖区间](https://leetcode-cn.com/problems/remove-covered-intervals) :ballot_box_with_check:
+
+[56.区间合并](https://leetcode-cn.com/problems/merge-intervals) :ballot_box_with_check:
+
+[986.区间列表的交集](https://leetcode-cn.com/problems/interval-list-intersections) :ballot_box_with_check:
+
+所谓区间问题，就是线段问题，让你合并所有线段、找出线段的交集等等。主要有两个技巧：
+
+**1、排序**。常见的排序方法就是按照区间起点排序，或者先按照起点升序排序，若起点相同，则按照终点降序排序。当然，如果你非要按照终点排序，无非对称操作，本质都是一样的。
+
+**2、画图**。就是说不要偷懒，勤动手，两个区间的相对位置到底有几种可能，不同的相对位置我们的代码应该怎么去处理。
+
+#### IntervalsCovered & IntervalsMerge
+
+```python
+class Solution:
+    def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
+        n = len(intervals)
+        # 优先对left升序，其次对left降序
+        intervals.sort(key=lambda x: (x[0], -x[1]))
+        left, right = intervals[0][0], intervals[0][1]
+        res = 0
+        for inter in intervals[1:]:
+            # 找到覆盖区域
+            if left <= inter[0] and right >= inter[1]:
+                ...
+            # 找到相交区域，更新右边界
+            if right >= inter[0] and right <= inter[1]:
+              	...
+                right = inter[1]
+            # 区域不相交，更新左右边界
+            if right < inter[0]:
+              	...
+                left = inter[0]
+                right = inter[1]
+        return n - res
+```
+
+可以在 `...` 中进行对应操作，
+
+#### IntervalsIntersection
+
+```python
+def intervalIntersection(self, A: List[List[int]], B: List[List[int]]) -> List[List[int]]:
+        i,j = 0,0  # 初始化双指针
+        res = []
+        while i < len(A) and j < len(B):
+            a1, a2 = A[i][0], A[i][1]
+            b1, b2 = B[j][0], B[j][1]
+            # 存在相交区间
+            if b2 >= a1 and b1 <= a2:
+                # 更新
+                res.append([max(a1,b1), min(a2,b2)])
+            # 指针前进条件
+            if b2 > a2:
+                i += 1
+            else:
+                j += 1
+        return res
+```
+
+## nSums Problem
+
+[1.两数之和](https://leetcode-cn.com/problems/two-sum) :ballot_box_with_check:
+
+[170.两数之和 III - 数据结构设计](https://leetcode-cn.com/problems/two-sum-iii-data-structure-design) :ballot_box_with_check:
+
+[15.三数之和 :ballot_box_with_check:](https://leetcode-cn.com/problems/3sum/)
+
+[18.四数之和 :ballot_box_with_check:](https://leetcode-cn.com/problems/4sum/)
+
+#### Framework
+
+```python
+'''
+注意：调用这个函数之前一定要先给 nums 排序
+'''
+def nSumTarget(nums: List[int], n: int, start: int, target: int)->List[List[int]]:
+    sz = len(nums)
+		res = []
+    # 至少是 2Sum，且数组大小不应该小于 n
+    if n < 2 or sz < n: return res
+    # 2Sum 是 base case
+    if n == 2:
+        # 双指针那一套操作
+        lo, hi = start, sz - 1;
+        while lo < hi:
+            sum_ = nums[lo] + nums[hi]
+            left, right = nums[lo], nums[hi]
+            if sum_ < target:
+                while lo < hi and nums[lo] == left: lo+=1
+            elif sum_ > target:
+                while lo < hi and nums[hi] == right: hi-=1
+            else:
+                res.append([left, right])
+                while lo < hi and nums[lo] == left: lo+=1
+                while lo < hi and nums[hi] == right: hi-=1
+    else:
+        # n > 2 时，递归计算 (n-1)Sum 的结果
+        i = start
+        while i < sz:
+          	# 递归求nSum
+            sub = nSumTarget(nums, n - 1, i + 1, target - nums[i]);
+            for arr in sub:
+                # (n-1)Sum 加上 nums[i] 就是 nSum
+                arr.append(nums[i])
+                res.append(arr)
+            while i < sz - 1 and nums[i] == nums[i + 1]: i+=1
+    return res
+```
+
+**关键点在于，不能让第一个数重复，至于后面的两个数，我们复用的 `twoSum` 函数会保证它们不重复**。所以代码中必须用一个 while 循环来保证 `3Sum` 中第一个元素不重复。
+
