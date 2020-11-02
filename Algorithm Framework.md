@@ -120,6 +120,31 @@ def flatten(self, root: TreeNode) -> None:
 
 另外注意递归框架是后序遍历，因为我们要先拉平左右子树才能进行后续操作。
 
+[106.从中序遍历序列和后序遍历构造二叉树](https://leetcode-cn.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/description/)
+
+递归解决，主要侧重当前节点的操作逻辑，然后递归解决子节点。
+
+```python
+def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
+    '''
+    
+    '''
+    if not inorder:
+        return None
+    root = TreeNode()
+    # 确定root节点，和在inorder index
+    root.val = postorder[-1]
+    idx = inorder.index(root.val)
+		# 确保left_chunk和right_chunk的大小
+    left_chunk_sz = len(inorder[:idx])
+    right_chunk_sz = len(inorder[idx+1:])
+		# 确定left，right在各自order下的index，递归解决
+    root.left = self.buildTree(inorder[:idx], postorder[:left_chunk_sz])
+    root.right = self.buildTree(
+        inorder[idx+1:], postorder[left_chunk_sz:left_chunk_sz+right_chunk_sz])
+    return root
+```
+
 ## Dynamic Programming
 
 **首先，动态规划问题的一般形式就是求最值**。动态规划其实是运筹学的一种最优化方法，只不过在计算机问题上应用比较多，比如说让你求**最长**递增子序列呀，**最小**编辑距离呀等等。
@@ -134,7 +159,7 @@ def flatten(self, root: TreeNode) -> None:
 
 以上提到的**重叠子问题、最优子结构、状态转移方程**就是动态规划三要素。具体什么意思等会会举例详解，但是在实际的算法问题中，**写出状态转移方程是最困难的**，这也就是为什么很多朋友觉得动态规划问题困难的原因，我来提供我研究出来的一个思维框架，辅助你思考状态转移方程：
 
-**明确 base case -> 明确「状态」-> 明确「选择」 -> 定义 dp 数组/函数的含义**。
+**明确「状态」-> 明确「选择」 -> 明确 base case -> 定义 dp 数组/函数的含义**。
 
 **方法：**
 
@@ -143,6 +168,58 @@ def flatten(self, root: TreeNode) -> None:
 - **dp数组迭代解法（自底向上）**
 
 ---
+
+### Subsequence Problem
+
+
+
+### Greedy
+
+### Knapsack Problem
+
+#### 0-1 Knapsack
+
+所以状态有两个，就是「背包的容量」和「可选择的物品」并且可选择物品的数量是**「严格限制」**。 选择就是「装进背包」或者「不装进背包」。
+
+- `dp[i][w]`的定义如下：对于前`i`个物品，当前背包的容量为`w`，这种情况下可以装的最大价值是`dp[i][w]`。
+
+- base case 就是`dp[0][..] = dp[..][0] = 0`
+
+```pseudocode
+int dp[N+1][W+1]
+dp[0][..] = 0
+dp[..][0] = 0
+
+for i in [1..N]:
+    for w in [1..W]:
+        dp[i][w] = max(
+            把物品 i 装进背包,
+            不把物品 i 装进背包
+        )
+return dp[N][W]
+```
+
+#### Unbounded Knapsack
+
+有一个背包，最大容量为`amount`，有一系列物品`coins`，每个物品的重量为`coins[i]`，**「每个物品数量无限」**。请问有多少种方法，能够把背包恰好装满？
+
+这个问题和我们前面讲过的两个背包问题，有一个最大的区别就是，每个物品的数量是无限的，这也就是传说中的「**完全背包问题**」，没啥高大上的，无非就是状态转移方程有一点变化而已。
+
+- `dp[i][j]`的定义如下：若只使用前`i`个物品，当背包容量为`j`时，有`dp[i][j]`种方法可以装满背包。
+
+- base case 为`dp[0][..] = 0， dp[..][0] = 1`。因为如果不使用任何硬币面值，就无法凑出任何金额；如果凑出的目标金额为 0，那么“无为而治”就是唯一的一种凑法。
+
+```pseudocode
+int dp[N+1][amount+1]
+dp[0][..] = 0
+dp[..][0] = 1
+
+for i in [1..N]:
+    for j in [1..amount]:
+        把物品 i 装进背包,
+        不把物品 i 装进背包
+return dp[N][amount]
+```
 
 ### Stock Problem
 
