@@ -614,14 +614,16 @@ $$
 
 #### **Focal Loss**:
 
+- 解决**正负**样本不平衡问题
+
 $$
 CE(p,y)=\begin{cases}
--\log(p) &{,if \ \ \ y=1}\\
--\log(1-p) &{,if \ \ \ y=0}
+-\alpha\log(p) &{,if \ \ \ y=1}\\
+-(1-\alpha)\log(1-p) &{,if \ \ \ y=0}
 \end{cases}
 $$
 
-- 上式解决**正负**样本不平衡问题
+- 解决**难易**样本不平衡问题
 
 $$
 FL(p, y)=\begin{cases}
@@ -630,7 +632,7 @@ FL(p, y)=\begin{cases}
 \end{cases}
 $$
 
-- 上式解决**难易**样本不平衡问题
+- 同时解决以上两个问题 — **Focal Loss**
 
 $$
 FL(p,y)=\begin{cases}
@@ -639,11 +641,9 @@ FL(p,y)=\begin{cases}
 \end{cases}
 $$
 
-- 上式同时解决以上两个问题 — **Focal Loss**
-
 1. 无论是前景类还是背景类，$p_t$ (概率)越大，权重$(1-p_t)^\gamma$就越小。也就是说easy example可以通过权重进行抑制；
 2. $\alpha_t$ 用于调节positive和negative的比例，前景类别使用 $\alpha_t$ 时，对应的背景类别使用 $1-\alpha_t$ ；
-3. $\gamma$ 和 $\alpha_t$ 的最优值是相互影响的，所以在评估准确度时需要把两者组合起来调节。作者在论文中给出$\gamma=2$ $\alpha_t = 0.25$ 时，ResNet-101+FPN作为backbone的结构有最优的性能。
+3. $\gamma$ 和 $\alpha_t$ 的最优值是相互影响的，所以在评估准确度时需要把两者组合   起来调节。作者在论文中给出$\gamma=2$ $\alpha_t = 0.25$ 时，ResNet-101+FPN作为backbone的结构有最优的性能。
 
 #### **RetinaNet结构:**
 

@@ -81,17 +81,17 @@ class NTreeNode:
 
 ### Stock Problem
 
-[买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/)
+[买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/) :ballot_box_with_check:
 
-[买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/)
+[买卖股票的最佳时机 II](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-ii/) :ballot_box_with_check:
 
-[买卖股票的最佳时机 III](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
+[买卖股票的最佳时机 III :ballot_box_with_check:](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iii/)
 
-[买卖股票的最佳时机 IV](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
+[买卖股票的最佳时机 IV :ballot_box_with_check:](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-iv/)
 
-[最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/)
+[最佳买卖股票时机含冷冻期](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-cooldown/) :ballot_box_with_check:
 
-[买卖股票的最佳时机含手续费](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
+[买卖股票的最佳时机含手续费 :ballot_box_with_check:](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock-with-transaction-fee/)
 
 ```mermaid
 graph LR;
@@ -123,8 +123,6 @@ for 0 <= i < n:
             dp[i][k][s] = max(buy, sell, rest)
 return max(dp[-1][k][0])
 ```
-
-
 
 ---
 
