@@ -4,7 +4,7 @@
 
 ### Version 1
 
-#### **:star2: Highlight：**
+#### :star2: Highlight：
 
 1. 采用<u>**不同大小的卷积核意味着不同大小的感受野，最后拼接意味着不同尺度特征的融合**</u>；
 2. 之所以卷积核大小采用1、3和5，主要是为了方便对齐。**<u>设定卷积步长stride=1之后，只要分别设定pad=0、1、2，那么卷积之后便可以得到相同维度的特征，然后这些特征就可以直接拼接在一起了</u>**；
@@ -15,29 +15,27 @@
 
 例如：上一层的输出为100x100x128，经过具有256个输出的5x5卷积层之后(stride=1，padding=2)，输出数据为100x100x256。其中，卷积层的参数为128x5x5x256。假如上一层输出先经过具有32个输出的1x1卷积层，再经过具有256个输出的5x5卷积层，那么最终的输出数据仍为为100x100x256，但卷积参数量已经减少为128x1x1x32 + 32x5x5x256，大约减少了4倍。
 
-#### **Inception Block结构：**
+#### Inception Block结构：
 
 ![Screen Shot 2019-03-21 at 4.57.11 PM](./assets/Screen%20Shot%202019-03-21%20at%204.57.11%20PM.png)
 
 
 
-#### **:star: Highlight：**
-
 ![Screen Shot 2019-03-21 at 4.57.39 PM](./assets/Screen%20Shot%202019-03-21%20at%204.57.39%20PM.png)
 
-### **Version 2**
+### Version 2
 
-**模型改进：**
+#### 模型改进：
 
 1. 使用BN层，将每一层的输出都规范化到一个N(0,1)的正态分布，这将有助于训练，因为下一层**<u>不必学习输入数据中的偏移，并且可以专注与如何更好地组合特征</u>**（也因为在v2里有较好的效果，BN层几乎是成了深度网络的必备）；**<u>BN层能够提升模型的训练速度</u>**
 
-**Inception Block结构：**
+#### Inception Block结构：
 
 ![Screen Shot 2019-03-21 at 4.57.48 PM](./assets/Screen%20Shot%202019-03-21%20at%204.57.48%20PM.png)
 
 
 
-#### **Result on ImageNet：**
+#### Result on ImageNet：
 
 ![Screen Shot 2019-03-21 at 4.57.51 PM](./assets/Screen%20Shot%202019-03-21%20at%204.57.51%20PM.png)
 
@@ -45,13 +43,13 @@
 
 ### Version 4
 
-#### **Inception Block：**
+#### Inception Block：
 
 ![Screen Shot 2019-03-21 at 4.57.58 PM](./assets/Screen%20Shot%202019-03-21%20at%204.57.58%20PM.png)
 
 
 
-#### Conclusion：
+### Conclusion：
 
 - Inception网络模式人工痕迹太重，模型太复杂。容易过拟合。
 - 模式属于split-transform-merge模式，每一路通道进行单独转换，最后所有通道concate（级联）
@@ -59,7 +57,7 @@
 
 ## ResNet
 
-- **:star: Highlight**
+### :star: Highlight
 
 ![Screen Shot 2019-02-01 at 3.32.42 PM](./assets/Screen%20Shot%202019-02-01%20at%203.32.42%20PM.png)
 
@@ -67,7 +65,7 @@
 
 ![Screen Shot 2019-08-21 at 11.10.51 am](assets/Screen%20Shot%202019-08-21%20at%2011.10.51%20am.png)
 
-#### :star2: **Highlight:**
+### :star2: Highlight:
 
 1. Detailed experiment of ResNet
 2. Novel **widened** architecture for ResNet block
@@ -81,13 +79,13 @@
 
 ## ResNext
 
-#### **:star2: Highlight：**
+### :star2: Highlight：
 
 1. 在ResNet模型的基础上增加了Residual Block的宽度（通道），检验了模型宽度所带来的精度提升。
 2. 最后所有通道仅仅是相加起来便可以融合。符合split-transform-merge模式
 3. 进一步验证了split-transform-merge模式的普遍性和有效性
 
-#### **ResNext Block：**
+### ResNext Block：
 
 ![Screen Shot 2019-03-21 at 5.07.10 PM](./assets/Screen%20Shot%202019-03-21%20at%205.07.10%20PM.png)
 
@@ -99,7 +97,7 @@
 - 如果将最后1x1的合并到一起，等价于网络b中拥有和Inception-ResNet的结构（concate）
 - 进一步将输入的1x1合并，等价于网络c中和通道分组卷积网络结构类似
 
-#### **Conclusion：**
+### Conclusion：
 
 - ResNext-101 （32x4d）大小和Inception v4相当，精度略差。但是训练速度快很多
 - ResNext-101 （64x4d）大小和Inception-ResNet大一点，精度相当或略差，速度快非常多
@@ -119,7 +117,7 @@ $$
 
 ##  VGG
 
-#### **:star2: Highlight**
+### :star2: Highlight
 
 1. 整个网络都使用了同样大小的卷积核尺寸（3 x 3）和最大池化尺寸（2 x 2）
 2. 1 x 1卷积的意义主要在于线性变换，而输入通道数和输出通道数不变，没有发生降维。
@@ -132,7 +130,7 @@ $$
 
 ## SE-Net
 
-#### **:star2: Highlight：**
+### :star2: Highlight：
 
 通过feature recalibration（重校正）给channel增加权重，提升每个channel的表征特性（channel和feature map之间的明确关系）
 
@@ -147,7 +145,7 @@ $$
   - 降低参数量和
 - 通过sigmoid之后将$1 \times 1 \times C$ 的权重与$H \times W \times C$ 一一相乘得到结果
 
-#### 模型变体：
+### 模型变体：
 
 ![Screen Shot 2019-03-25 at 11.24.37 AM](./assets/Screen%20Shot%202019-03-25%20at%2011.24.37%20AM.png)
 
@@ -155,11 +153,11 @@ $$
 
 ## Shuffle Net
 
-#### **:star2: Highlight：**
+### :star2: Highlight：
 
 - 轻便， $shuffle$  operation help information flowing across feature channel
 
-#### **Group Convolution：**
+### Group Convolution：
 
 ![Screen Shot 2019-03-21 at 5.39.52 PM](./assets/Screen%20Shot%202019-03-21%20at%205.39.52%20PM.png)
 
@@ -168,7 +166,7 @@ $$
   - e.g. 假设原来输入通道数：256，输出通道数：256，kernal size： 3x3，overall parameter：256x3x3x256 = 589824
   - 使用group channel之后：假设group = 8，每个group通道：256/8 = 32，overall parameter：8x32x3x3x32 = 73728
 
-#### **Channel Shuffle Operation:**
+### Channel Shuffle Operation:
 
 ![Screen Shot 2019-03-21 at 5.21.18 PM](./assets/Screen%20Shot%202019-03-21%20at%205.21.18%20PM.png)
 
@@ -178,7 +176,7 @@ $$
 - b：input channel 和 output channel之间充分交流
 - c：使用shuffle操作达到 **b** 的效果
 
-#### **ShuffleNet Unit**
+### ShuffleNet Unit
 
 ![Screen Shot 2019-03-21 at 6.28.09 PM](./assets/Screen%20Shot%202019-03-21%20at%206.28.09%20PM.png)
 
@@ -295,7 +293,7 @@ class DepthSeperateConv(nn.Module):
 
 ![Screen Shot 2019-06-26 at 5.55.12 pm](./assets/Screen%20Shot%202019-06-26%20at%205.55.12%20pm.png)
 
-#### **MobileNetV2 Block:**
+#### MobileNetV2 Block:
 
 ```python
 class InvertedResidual(nn.Module):
@@ -342,7 +340,7 @@ class InvertedResidual(nn.Module):
 
 ### V3
 
-#### **Related Work**
+#### Related Work
 
 1. MobileNetV1: depth-wise separable conv提升了计算效率
 2. MobileNetV2: 使用反转residual block和linear block
@@ -351,7 +349,7 @@ class InvertedResidual(nn.Module):
 5. CondenseNet: 在training stage学习group conv来保证dense connections between layers for re-use
 6. ShiftNet: 提出了shift operation interleaved with point-wise conv来代替昂贵的spatial conv
 
-#### **h-swish Activation:**
+#### h-swish Activation:
 
 $$
 f(x)=x \cdot \frac{ReLU6(x+3)}{6}
@@ -362,17 +360,17 @@ $$
 
 **NAS Search Space**: combination of above
 
-#### **Architecture**
+#### Architecture
 
 ![Screen Shot 2019-11-25 at 6.01.05 pm](assets/Screen%20Shot%202019-11-25%20at%206.01.05%20pm.png)
 
-#### **Lite Reduced-ASPP**
+#### Lite Reduced-ASPP
 
 ![Screen Shot 2019-11-25 at 6.05.25 pm](assets/Screen%20Shot%202019-11-25%20at%206.05.25%20pm.png)
 
 ## EfficientNet (ICML 2019)
 
-#### **Abstract**
+### Abstract
 
 Propose a new scaling method that uniformly scales all dimensions of depth/width/resolution using
 
@@ -380,7 +378,7 @@ Propose a new scaling method that uniformly scales all dimensions of depth/width
 
 ![Screen Shot 2019-11-18 at 4.20.25 pm](assets/Screen%20Shot%202019-11-18%20at%204.20.25%20pm.png)
 
-#### **Compound Model Scaling**
+### Compound Model Scaling
 
 We can define a ConvNets as:
 $$
@@ -405,14 +403,14 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
 
 ![Screen Shot 2019-11-18 at 5.34.56 pm](assets/Screen%20Shot%202019-11-18%20at%205.34.56%20pm.png)
 
-#### **EfficientNet Architecture**
+### EfficientNet Architecture
 
 - MBC is mobile inverted bottleneck — mobilenetv2 + Squeeze and Excitation
 - Add Squeeze-and-Excitation optimisation
 
 ![Screen Shot 2019-11-18 at 5.40.46 pm](assets/Screen Shot 2019-11-18 at 5.40.46 pm.png)
 
-#### **Result**
+### Result
 
 ![Screen Shot 2019-11-18 at 5.48.20 pm](assets/Screen%20Shot%202019-11-18%20at%205.48.20%20pm.png)
 
@@ -433,13 +431,13 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
 
 ## An Energy and GPU-Computation Efficient Backbone Network for Real-Time Object Detection (CVPR 2019)
 
-#### **Abstract**
+### Abstract
 
 - 提出一个能够充分利用各层feature map且非常高效的网络。2x faster and 1.6x ～ 4.1x consumption reduced
 
 ![Screen Shot 2020-03-31 at 10.40.45 am](assets/Screen%20Shot%202020-03-31%20at%2010.40.45%20am.png)
 
-#### **Factors of efficient Network Design**
+### Factors of efficient Network Design
 
 - 减少FLOPs和模型size并不代表减少GPU inference time & real energy consumption
 - 拥有同样FLOPs的ShuffleNet V2和MobileNet V2，前者比后者更快
@@ -452,7 +450,7 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
    - GPU并行计算能力在处理大tensor效果更好，所以拆分大的卷积操作会降低GPU计算效率。(7x7卷积拆分成3个3x3的卷积能够降低FLOPs，但是并不能加速训练)。这说明，在设计网络的时候，最好压缩网络层数。
    - 尽管depthwise conv和1x1 conv能够降低FLOPs，这对GPU的计算效率有害。所以这里使用了FLOPs per second (FLOP/s)来计算真实的GPU inference time from total FLOPs。
 
-#### **Results**
+### Results
 
 ![Screen Shot 2020-03-31 at 11.12.16 am](assets/Screen%20Shot%202020-03-31%20at%2011.12.16%20am.png)
 
@@ -460,17 +458,17 @@ where $\mathcal{F}_{i}^{L_i}$ denotes layer $\mathcal{F}i$ is repeated $L_i$ tim
 
 ## Stacked Hourglass Networks (ECCV 2016)
 
-#### **Abstract**
+### Abstract
 
 - 能够通过不同的尺寸来巩固和获取最优的空间关系特征
 - 基于连续的上采样和下采样堆叠
 
-#### **Intermediate Supervision (中间监督)**
+### Intermediate Supervision (中间监督)
 
 - 大多数高阶特征只在低分辨率下出现，如果在网络上采样后进行监督，则无法在更大的全局上下文中重新评估这些特征。
 - hourglass的loss都是**单独计算**，这样能够对每个hourglass module进行再评估。意思是每个hourglass中间还原的feature map都会参与最终loss的计算。
 
-#### **Network**
+### Network
 
 ```python
 Class HourglassModule(nn.Module):
@@ -493,9 +491,93 @@ Class HourglassModule(nn.Module):
 
 ![Screen Shot 2020-04-02 at 3.35.21 pm](assets/Screen Shot 2020-04-02 at 3.35.21 pm.png)
 
+## CBAM: Convolutional Block Attention Module (ECCV 2018)
+
+### Abstract
+
+- 对于前馈卷积神经网络，attention模块能够在spatial和channel维度上得到attention map并直接mutiple到input feature map中作为refinement
+- 轻量级，end-to-end可训练，即插即用
+- 在图像分类，检测中均可适用
+
+![Screen Shot 2020-11-03 at 3.24.31 pm](assets/Screen%20Shot%202020-11-03%20at%203.24.31%20pm.png)
+
+### Convolutional Block Attention Module
+
+- internal feature map $F \in \R^{C \times H \times W}$
+- CBAM顺序推理出
+	- 1D channel attention map $M_c \in \R^{C \times 1 \times 1}$
+	- 2D spatial attention map $M_s \in \R^{1 \times H \times W}$
+	- $\otimes$ 是element-wise乘
+
+$$
+F' = M_c(F) \otimes F \\
+F'' = M_s(F) \otimes F'
+$$
+
+
+
+#### Channel Attention Module and Spatial Attention Module
+
+![Screen Shot 2020-11-03 at 5.08.45 pm](assets/Screen%20Shot%202020-11-03%20at%205.08.45%20pm.png)
+
+#### Code
+
+```python
+class ChannelAttention(nn.Module):
+  '''
+  CBAM channel模块
+  '''
+  def __init__(self, in_planes, rotio=16):
+      super(ChannelAttention, self).__init__()
+      # 全局池化
+      self.avg_pool = nn.AdaptiveAvgPool2d(1)
+      # 全局池化
+      self.max_pool = nn.AdaptiveMaxPool2d(1)
+      self.sharedMLP = nn.Sequential(
+          nn.Conv2d(in_planes, in_planes // ratio, 1, bias=False), nn.ReLU(),
+          nn.Conv2d(in_planes // rotio, in_planes, 1, bias=False))
+      self.sigmoid = nn.Sigmoid()
+
+  def forward(self, x):
+      avgout = self.sharedMLP(self.avg_pool(x))
+      maxout = self.sharedMLP(self.max_pool(x))
+      return self.sigmoid(avgout + maxout)
+    
+class SpatialAttention(nn.Module):
+  '''
+  CBAM Spatial模块
+  '''
+  def __init__(self, kernel_size=7):
+      super(SpatialAttention, self).__init__()
+      assert kernel_size in (3,7), 'kernel size must be 3 or 7'
+      padding = 3 if kernel_size == 7 else 1
+
+      self.conv = nn.Conv2d(2,1,kernel_size, padding=padding, bias=False)
+      self.sigmoid = nn.Sigmoid()
+
+  def forward(self, x):
+      avgout = torch.mean(x, dim=1, keepdim=True)
+      maxout, _ = torch.max(x, dim=1, keepdim=True)
+      x = torch.cat([avgout, maxout], dim=1)
+      x = self.conv(x)
+      return self.sigmoid(x)
+```
+
+#### Arrangement of attention modules
+
+![Screen Shot 2020-11-03 at 5.12.21 pm](assets/Screen%20Shot%202020-11-03%20at%205.12.21%20pm.png)
+
+### Ablation Exp.
+
+![Screen Shot 2020-11-03 at 5.15.21 pm](assets/Screen%20Shot%202020-11-03%20at%205.15.21%20pm.png)
+
+![Screen Shot 2020-11-03 at 5.15.26 pm](assets/Screen%20Shot%202020-11-03%20at%205.15.26%20pm.png)
+
+![Screen Shot 2020-11-03 at 5.15.31 pm](assets/Screen%20Shot%202020-11-03%20at%205.15.31%20pm.png)
+
 ## CSPNet: A New Backbone that can Enhance Learning Capability of CNN (CVPR 2020)
 
-#### **Abstract**
+### Abstract
 
 - Previous work relies on costly computation resources. 过去的模型依赖计算强大的资源
 - 提出了Cross Stage Partial Network来缓解该问题
@@ -504,7 +586,7 @@ Class HourglassModule(nn.Module):
 
 ![Screen Shot 2020-08-12 at 3.08.22 pm](assets/Screen%20Shot%202020-08-12%20at%203.08.22%20pm.png)
 
-#### Result
+### Result
 
 - 在分类网络中，能够降低计算量，对精度提升很小
 - 在检测网络中，能够降低计算量，而且对精度提升巨大
@@ -521,3 +603,4 @@ Class HourglassModule(nn.Module):
 ### Vision Transformer(VIT)
 
 ![Screen Shot 2020-10-04 at 9.04.02 pm](assets/Screen%20Shot%202020-10-04%20at%209.04.02%20pm.png)
+

@@ -171,9 +171,94 @@ def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
 
 ### Subsequence Problem
 
+[53.最大子序和](https://leetcode-cn.com/problems/maximum-subarray/)
 
+[72.编辑距离](https://leetcode-cn.com/problems/edit-distance)
+
+[300.最长上升子序列](https://leetcode-cn.com/problems/longest-increasing-subsequence)
+
+[354.俄罗斯套娃信封问题](https://leetcode-cn.com/problems/russian-doll-envelopes)
+
+[1143.最长公共子序列](https://leetcode-cn.com/problems/longest-common-subsequence)
+
+子序列问题本身就相对子串、子数组更困难一些，**因为前者是不连续的序列，而后两者是连续的**，就算穷举都不容易，更别说求解相关的算法问题了。
+
+1. **第一种思路模板是一个一维的 dp 数组**：
+
+```pseudocode
+int n = array.length;
+int[] dp = new int[n];
+
+for (int i = 1; i < n; i++) {
+    for (int j = 0; j < i; j++) {
+        dp[i] = 最值(dp[i], dp[j] + ...)
+    }
+}
+```
+
+举个我们写过的例子 [最长递增子序列](http://mp.weixin.qq.com/s?__biz=MzAxODQxMDM0Mw==&mid=2247484498&idx=1&sn=df58ef249c457dd50ea632f7c2e6e761&chksm=9bd7fa5aaca0734c29bcf7979146359f63f521e3060c2acbf57a4992c887aeebe2a9e4bd8a89&scene=21#wechat_redirect)，在这个思路中 dp 数组的定义是：
+
+**在子数组`array[0..i]`中，以`array[i]`结尾的目标子序列（最长递增子序列）的长度是`dp[i]`**。
+
+2. **第二种思路模板是一个二维的 dp 数组**：
+
+	**2.1** **涉及两个字符串/数组时**（比如最长公共子序列），dp 数组的含义如下：
+
+	**在子数组`arr1[0..i]`和子数组`arr2[0..j]`中，我们要求的子序列（最长公共子序列）长度为`dp[i][j]`**。
+
+	**2.2** **只涉及一个字符串/数组时**（比如本文要讲的最长回文子序列），dp 数组的含义如下：
+
+	**在子数组`array[i..j]`中，我们要求的子序列（最长回文子序列）的长度为`dp[i][j]`**。
+
+```pseudocode
+int n = arr.length;
+int[][] dp = new dp[n][n];
+
+for (int i = 0; i < n; i++) {
+    for (int j = 1; j < n; j++) {
+    		# 相等操作
+        if (arr[i] == arr[j]) 
+            dp[i][j] = dp[i][j] + ...
+        # 不相等操作
+        else
+            dp[i][j] = 最值(...)
+    }
+}
+```
+
+这种思路运用相对更多一些，尤其是涉及两个字符串/数组的子序列。本思路中 dp 数组含义又分为「只涉及一个字符串」和「涉及两个字符串」两种情况。
+
+---
 
 ### Greedy
+
+**贪心选择性质呢，简单说就是：每一步都做出一个局部最优的选择，最终的结果就是全局最优。**然而，大部分问题明显不具有贪心选择性质。比如打斗地主，对手出对儿三，按照贪心策略，你应该出尽可能小的牌刚好压制住对方，但现实情况我们甚至可能会出王炸。这种情况就不能用贪心算法，而得使用动态规划解决
+
+#### 重叠区间问题
+
+[435. 无重叠区间](https://leetcode-cn.com/problems/non-overlapping-intervals/)
+
+[452.用最少数量的箭引爆气球](https://leetcode-cn.com/problems/minimum-number-of-arrows-to-burst-balloons)
+
+```python
+# 根据尾部进行正序排序
+intervals.sort(key=lambda x:x[1])
+end = intervals[0][1]
+for i in range(1, len(intervals)):
+  if end > intervals[i][0]:
+    操作
+  反向操作
+```
+
+#### Jump Game
+
+[55.跳跃游戏](https://leetcode-cn.com/problems/jump-game)
+
+[45.跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii)
+
+
+
+---
 
 ### Knapsack Problem
 
@@ -221,6 +306,8 @@ for i in [1..N]:
 return dp[N][amount]
 ```
 
+---
+
 ### Stock Problem
 
 [买卖股票的最佳时机](https://leetcode-cn.com/problems/best-time-to-buy-and-sell-stock/solution/) :ballot_box_with_check:
@@ -265,6 +352,8 @@ for 0 <= i < n:
             dp[i][k][s] = max(buy, sell, rest)
 return max(dp[-1][k][0])
 ```
+
+---
 
 ### EGG Problem
 
@@ -522,6 +611,8 @@ def slidingWindow(s: str, t: str) {
 **其中两处** **`...`** **表示的更新窗口数据的地方，到时候你直接往里面填就行了**。
 
 而且，这两个 `...` 处的操作分别是右移和左移窗口更新操作，等会你会发现它们操作是完全对称的。这个算法技巧的时间复杂度是 O(N)，比字符串暴力算法要高效得多。
+
+**:fire:使用滑动窗口的关键是需要知道何时移动右指针扩大窗口，且何时移动左指针缩小窗口。**
 
 ## Intervals Problem
 
