@@ -853,8 +853,7 @@ output :GIoU
 
 1. For A and B, find the smallest enclosing convex object C, where C ⊆ S ∈ R
 2. IoU = |A ∩ B| / |A ∪ B|
-3. GIoU = IoU - ｜C -（A ∪ B）｜ / ｜C｜  # 当A与B越来越远，（A ∪ B）会越来越小。所以｜C/（A ∪ B）｜会
-																				 趋向于｜C｜,右边的比值会接近1.GIoU的最小值会无限接近于1
+3. GIoU = IoU - |C -（A ∪ B）| / |C|  # 当A与B越来越远，（A ∪ B）会越来越小。所以|(A∪B)|会趋向于|C|,右边的比值会接近0.GIoU的会趋向于IoU
 ```
 
 - Lower bound for IoU
