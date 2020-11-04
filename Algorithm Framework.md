@@ -256,11 +256,177 @@ for i in range(1, len(intervals)):
 
 [45.跳跃游戏 II](https://leetcode-cn.com/problems/jump-game-ii)
 
+---
 
+### String Matching Problem
+
+[10.正则表达式匹配](https://leetcode-cn.com/problems/regular-expression-matching/)
+
+如果是两个普通的字符串进行比较，如何进行匹配？我想这个算法应该谁都会写：
+
+**一、普通字符串匹配**
+
+```python
+def isMatch(text: str, pattern: str) -> bool:
+  # text, pattern索引位置
+  i, j = 0, 0
+  while j < len(pattern):
+    if i >= len(text):
+      return False
+    if text[i] != pattern[j]:
+      return False
+    i += 1
+    j += 1
+  return j == len(i)
+
+def isMatch(text: str, pattern: str) -> bool:
+  '''
+  递归
+  '''
+  if not pattern:
+    return not text
+  firstmatch = bool(text) and text[0] == pattern[0]
+  return firstmatch and isMatch(text[1:], pattern[1:])
+```
+
+**二、处理点号「.」通配符**
+
+`.` 通配符可以匹配任意**一个**字符
+
+```python
+def isMatch(text: str, pattern: str) -> bool:
+  '''
+  递归
+  '''
+  if not pattern:
+    return not text
+  firstmatch = bool(text) and pattern[0] in (text[0], '.')
+  return firstmatch and isMatch(text[1:], pattern[1:])
+```
+
+**三、处理星号「\*」通配符**
+
+`*` 通配符可以**让前一个字符**出现**任意次数，包括零次**。
+
+```python
+def isMatch(text: str, pattern: str) -> bool:
+  '''
+  递归
+  '''
+  if not pattern:
+    return not text
+  firstmatch = bool(text) and pattern[0] in (text[0], '.')
+  if len(pattern) >= 2 and pattern[1] == '*':
+  	# 发现通配符'*', text与pattern, 返回pattern * 后与text匹配 ｜ firstmatch 和 pattern与text后一位的匹配
+    return isMatch(text, pattern[2:]) or firstmatch and isMatch(text[1:], pattern) 
+  else:
+  	return firstmatch and isMatch(text[1:], pattern[1:])
+```
+
+**四、动态规划**
+
+```python
+def isMatch(text: str, pattern: str) -> bool:
+  '''
+  动态规划 with memo
+  '''
+  def dp(i, j):
+    if (i,j) in memo: return memo[(i, j)]
+    if j == len(pattern): return i == len(text)
+    firstmatch = bool(i < len(text)) and pattern[j] in (text[i], '.')
+    if j <= len(pattern)-2 and pattern[j+1] == '*':
+      # 发现通配符'*', text与pattern
+      ans = dp(i, j+2) or firstmatch and dp(i+1,j)
+    else:
+      ans = firstmatch and dp(i+1, j+1)
+    memo[(i,j)] = ans
+    return ans
+ 	return dp(0, 0)
+```
 
 ---
 
-### Knapsack Problem
+### KMP
+
+[28.实现 strStr()](https://leetcode-cn.com/problems/implement-strstr)
+
+**用 `pat` 表示模式串，长度为 `M`，`txt` 表示文本串，长度为 `N`。KMP 算法是在 `txt` 中查找子串 `pat`，如果存在，返回这个子串的起始索引，否则返回 -1**。
+
+暴力的字符串匹配算法很容易写，看一下它的运行逻辑：
+
+```java
+// 暴力匹配（伪码）
+int search(String pat, String txt) {
+    int M = pat.length;
+    int N = txt.length;
+    for (int i = 0; i <= N - M; i++) {
+        int j;
+        for (j = 0; j < M; j++) {
+            if (pat[j] != txt[i+j])
+                break;
+        }
+        // pat 全都匹配了
+        if (j == M) return i;
+    }
+    // txt 中不存在 pat 子串
+    return -1;
+}
+```
+
+对于暴力算法，如果出现不匹配字符，同时回退 `txt` 和 `pat` 的指针，嵌套 for 循环，时间复杂度 `O(MN)`，空间复杂度`O(1)`。最主要的问题是，如果字符串中重复的字符比较多，该算法就显得很蠢。
+
+明白了 `dp` 数组只和 `pat` 有关，那么我们这样设计 KMP 算法就会比较漂亮：
+
+```java
+public class KMP {
+    private int[][] dp;
+    private String pat;
+  
+    public KMP(String pat) {
+        this.pat = pat;
+        // 通过 pat 构建 dp 数组
+        // 需要 O(M) 时间
+        this.pat = pat;
+        int M = pat.length();
+        // dp[状态][字符] = 下个状态
+        dp = new int[M][256];
+        // base case
+        dp[0][pat.charAt(0)] = 1;
+        // 影子状态 X 初始为 0
+        int X = 0;
+        // 构建状态转移图（稍改的更紧凑了）
+        for (int j = 1; j < M; j++) {
+            for (int c = 0; c < 256; c++)
+                dp[j][c] = dp[X][c];
+            dp[j][pat.charAt(j)] = j + 1;
+            // 更新影子状态
+            X = dp[X][pat.charAt(j)];
+        }
+    }
+
+    public int search(String txt) {
+        // 借助 dp 数组去匹配 txt
+        // 需要 O(N) 时间
+        int M = pat.length();
+        int N = txt.length();
+        // pat 的初始态为 0
+        int j = 0;
+        for (int i = 0; i < N; i++) {
+            // 当前是状态 j，遇到字符 txt[i]，
+            // pat 应该转移到哪个状态？
+            j = dp[j][txt.charAt(i)];
+            // 如果达到终止态，返回匹配开头的索引
+            if (j == M) return i - M + 1;
+        }
+        // 没到达终止态，匹配失败
+        return -1;
+    }
+}
+```
+
+---
+
+###  Knapsack Problem
 
 #### 0-1 Knapsack
 
@@ -619,6 +785,8 @@ def slidingWindow(s: str, t: str) {
 [1288.删除被覆盖区间](https://leetcode-cn.com/problems/remove-covered-intervals) :ballot_box_with_check:
 
 [56.区间合并](https://leetcode-cn.com/problems/merge-intervals) :ballot_box_with_check:
+
+[57.插入区间](https://leetcode-cn.com/problems/insert-interval/):ballot_box_with_check:
 
 [986.区间列表的交集](https://leetcode-cn.com/problems/interval-list-intersections) :ballot_box_with_check:
 

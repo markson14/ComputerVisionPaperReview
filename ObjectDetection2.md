@@ -51,7 +51,7 @@ return ROI
     $$
     
 
-# Imbalance Problems in Object detection
+## Imbalance Problems in Object detection
 
 1. 类别不平衡：前景和背景不平衡、前景中不同类别输入包围框的个数不平衡；
 
@@ -78,6 +78,8 @@ return ROI
 **Toy Example of Selection methods**
 
 ![Screen Shot 2019-09-10 at 4.03.52 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.52%20pm.png)
+
+## Bridging the Gap Between Anchor-based and Anchor-free Detection via Adaptive Training Sample Selection ()
 
 # Anchor Free
 
@@ -379,6 +381,14 @@ return ROI
 ![Screen Shot 2020-05-11 at 6.29.16 pm](assets/Screen%20Shot%202020-05-11%20at%206.29.16%20pm.png)
 
 ![Screen Shot 2020-05-11 at 6.29.31 pm](assets/Screen%20Shot%202020-05-11%20at%206.29.31%20pm.png)
+
+# Set Prediction
+
+## End-to-End Object Detection with Transformers
+
+
+
+
 
 # Few-shot Detection
 
