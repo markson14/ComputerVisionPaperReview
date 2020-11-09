@@ -79,7 +79,13 @@ return ROI
 
 ![Screen Shot 2019-09-10 at 4.03.52 pm](assets/Screen%20Shot%202019-09-10%20at%204.03.52%20pm.png)
 
-## Bridging the Gap Between Anchor-based and Anchor-free Detection via Adaptive Training Sample Selection ()
+## Bridging the Gap Between Anchor-based and Anchor-free Detection via Adaptive Training Sample Selection
+
+### Abstract
+
+
+
+---
 
 # Anchor Free
 
@@ -384,11 +390,37 @@ return ROI
 
 # Set Prediction
 
-## End-to-End Object Detection with Transformers
+## End-to-End Object Detection with Transformers(Facebook AI)
 
+### Abstract
 
+- 将目标检测视作集合预测问题
+- streamlines(精简) detection pipeline，remove hand-designed components
+- 主要结构为DEtection TRansformer(DETR)，全局loss基于双向匹配和编解码器结构
+- 给定query set(需要检测目标)，直接并行返回预测结果
 
+![Screen Shot 2020-11-05 at 3.19.43 pm](assets/Screen%20Shot%202020-11-05%20at%203.19.43%20pm.png)
 
+### DETR
+
+set prediction必要元素：
+
+1. 可以对predicted和GT boxes做唯一性匹配的Loss
+2. 能够预测objects及其关系的模型结构
+
+#### Set prediction loss
+
+$$
+\hat\sigma = \underset{\sigma \in \mathfrak{S}_N}{\arg min}\sum_i^N{\mathcal{L}_{match}(y_i, \hat{y}_{\sigma(i)})}
+$$
+
+where $\mathcal{L}_{match}(y_i, \hat{y}_{\sigma(i)})$ is a pair-wise matching cost between ground truth yi and a prediction with index σ(i).并利用hungarian算法计算最小值
+
+#### Architecture
+
+![Screen Shot 2020-11-05 at 4.32.10 pm](assets/Screen%20Shot%202020-11-05%20at%204.32.10%20pm.png)
+
+---
 
 # Few-shot Detection
 

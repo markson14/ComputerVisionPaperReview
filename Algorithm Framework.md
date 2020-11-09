@@ -6,6 +6,88 @@
 
 ## Data Structure
 
+### Binary Heap
+
+堆排序的基础结构。二叉堆其实就是一种特殊的二叉树（完全二叉树），只不过存储在数组里。一般的链表二叉树，我们操作节点的指针，而在**数组里**，我们把数组索引作为指针
+
+```python
+def parent(child: int):
+  	return child // 2
+def left(root: int):
+  	return root*2
+def right(root: int):
+  	return root*2+1
+```
+
+### Stack
+
+栈（stack）是很简单的一种数据结构，先进后出的逻辑顺序，符合某些问题的特点，比如说函数调用栈。
+
+单调栈实际上就是栈，只是利用了一些巧妙的逻辑，使得每次新元素入栈后，栈内的元素都保持有序（单调递增或单调递减）。
+
+#### 单调栈
+
+[496.下一个更大元素I](https://leetcode-cn.com/problems/next-greater-element-i)
+
+[503.下一个更大元素II](https://leetcode-cn.com/problems/next-greater-element-ii)
+
+[1118.一月有多少天](https://leetcode-cn.com/problems/number-of-days-in-a-month)
+
+```python
+def nextGreaterElement(nums: List) -> List:
+  	n = len(nums)
+    stack = []  # 保证栈内元素单调性
+    res = [0] * n
+    # 倒着入栈
+    for i in range(n-1, -1, -1):
+      	# 若stack.top小于等于nums[i]，将top pop出
+      	while stack and stack[-1] <= nums[i]:
+          	stack.pop()
+        # 返回栈顶
+        res[i] = -1 if not stack else stack[-1]
+        # 将当前加入栈中
+        stack.append(nums[i])
+    return res
+```
+
+#### 单调队列
+
+[239.滑动窗口最大值](https://leetcode-cn.com/problems/sliding-window-maximum)
+
+```python
+from collections import deque
+class MonoticQueue():
+  	'''
+  	保证队列内元素单调性
+  	'''
+    def __init__(self):
+        self.queue = deque()
+
+    def push(self, n):
+      	'''
+      	Time: <O(n)
+      	'''
+        # 将小于n的全部pop出
+        while self.queue and self.queue[-1] < n:
+            self.queue.pop()
+        self.queue.append(n)
+
+    def max(self):
+      	'''
+      	Time: O(1)
+      	'''
+        # 返回队首
+        return self.queue[0]
+
+    def remove(self, n):
+      	'''
+      	Time: O(1)
+      	'''
+        # 如果对首为需要remove元素，则deque.popleft()
+        if n == self.max():
+            self.queue.popleft()
+```
+
 ### Linked List
 
 ```python
@@ -143,6 +225,29 @@ def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
     root.right = self.buildTree(
         inorder[idx+1:], postorder[left_chunk_sz:left_chunk_sz+right_chunk_sz])
     return root
+```
+
+### Binary Search Tree
+
+[450.删除二叉搜索树中的节点](https://leetcode-cn.com/problems/delete-node-in-a-bst)
+
+[701.二叉搜索树中的插入操作](https://leetcode-cn.com/problems/insert-into-a-binary-search-tree)
+
+[700.二叉搜索树中的搜索](https://leetcode-cn.com/problems/search-in-a-binary-search-tree)
+
+[98.验证二叉搜索树](https://leetcode-cn.com/problems/validate-binary-search-tree)
+
+**二叉搜索树框架**
+
+```java
+void BST(TreeNode root, int target) {
+    if (root.val == target)
+        // 找到目标，做点什么
+    if (root.val < target) 
+        BST(root.right, target);
+    if (root.val > target)
+        BST(root.left, target);
+}
 ```
 
 ## Dynamic Programming
@@ -896,4 +1001,106 @@ def nSumTarget(nums: List[int], n: int, start: int, target: int)->List[List[int]
 ```
 
 **关键点在于，不能让第一个数重复，至于后面的两个数，我们复用的 `twoSum` 函数会保证它们不重复**。所以代码中必须用一个 while 循环来保证 `3Sum` 中第一个元素不重复。
+
+## Union Find
+
+### 问题介绍
+
+现在我们的 Union-Find 算法主要需要实现这两个 API：
+
+```python
+class UF():
+    # 将 p 和 q 连接
+    def(p: int, q: int) -> None
+    # 判断 p 和 q 是否连通
+    def(p: int , q: int ) -> bool
+    # 返回图中有多少个连通分量
+    def count() -> int
+```
+
+这里所说的「连通」是一种等价关系，也就是说具有如下三个性质：
+
+1、自反性：节点`p`和`p`是连通的。
+
+2、对称性：如果节点`p`和`q`连通，那么`q`和`p`也连通。
+
+3、传递性：如果节点`p`和`q`连通，`q`和`r`连通，那么`p`和`r`也连通。
+
+判断这种「等价关系」非常实用，比如说编译器判断同一个变量的不同引用，比如社交网络中的朋友圈计算等等。
+
+### 主要思路
+
+我们设定树的每个节点有一个指针指向其父节点，如果是根节点的话，这个指针指向自己。比如说刚才那幅 10 个节点的图，一开始的时候没有相互连通，就是这样：
+
+![img](https://gblobscdn.gitbook.com/assets%2F-LrtQOWSnDdXhp3kYN4k%2Fsync%2Fd3c6051348983ce3b226f6951a5ceaff17991021.jpg?alt=media)
+
+
+
+```python
+class UF():
+  	def __init__(self, n:int):
+      	# 一开始互不连通
+      	self.count = n
+        self.parent = [0] * n
+        #	父节点指针初始指向自己
+        for i in range(n):
+          	self.parent[i] = i
+    # 将 p 和 q 连接
+    def(p: int, q: int) -> None
+    # 判断 p 和 q 是否连通
+    def(p: int , q: int ) -> bool
+    # 返回图中有多少个连通分量
+    def count() -> int
+```
+
+**如果某两个节点被连通，则让其中的（任意）一个节点的根节点接到另一个节点的根节点上**：
+
+![img](https://gblobscdn.gitbook.com/assets%2F-LrtQOWSnDdXhp3kYN4k%2Fsync%2F400479177833924a24f303131950b2b7775ab597.jpg?alt=media)
+
+
+
+```python
+def union(p: int, q: int)-> None:
+    rootP = find(p)
+    rootQ = find(q)
+    if rootP == rootQ
+        return
+    # 将两棵树合并为一棵
+    self.parent[rootP] = rootQ  # parent[rootQ] = rootP 也一样
+    self.count -= 1  # 两个分量合二为一
+
+# 返回某个节点 x 的根节点
+def find(x: int)->int:
+    # 根节点的 parent[x] == x
+    while self.parent[x] != x
+    		# 路径压缩！！！O(n)->O(1)
+    		self.parent[x] = self.parent[self.parent[x]]
+        x = self.parent[x]
+    return x
+```
+
+**这样，如果节点`p`和`q`连通的话，它们一定拥有相同的根节点**：
+
+![img](https://gblobscdn.gitbook.com/assets%2F-LrtQOWSnDdXhp3kYN4k%2Fsync%2F273302945cdd2c7b45eb4f35a03714368eef5be9.jpg?alt=media)
+
+```python
+def connected(p: int, q: int)->bool: 
+    rootP = find(p)
+    rootQ = find(q)
+    return rootP == rootQ
+```
+
+### 应用场景
+
+1. 替代DFS
+
+[130.被围绕的区域](https://leetcode-cn.com/problems/surrounded-regions)
+
+**你可以把那些不需要被替换的** **`O`** **看成一个拥有独门绝技的门派，它们有一个共同祖师爷叫** **`dummy`，这些 **`O`**和** **`dummy`** **互相连通，而那些需要被替换的** **`O`** **与** **`dummy`** **不连通**。首先要解决的是，根据我们的实现，Union-Find 底层用的是**一维数组**，构造函数需要传入这个数组的大小，而题目给的是一个二维棋盘。
+
+[990.等式方程的可满足性](https://leetcode-cn.com/problems/surrounded-regions)
+
+使用 Union-Find 算法，主要是如何把原问题转化成图的动态连通性问题。对于算式合法性问题，可以直接利用等价关系，对于棋盘包围问题，则是利用一个虚拟节点，营造出动态连通特性。
+
+另外，将二维数组映射到一维数组，利用方向数组 `d` 来简化代码量，都是在写算法时常用的一些小技巧，如果没见过可以注意一下。
 
