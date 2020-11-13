@@ -83,7 +83,44 @@ return ROI
 
 ### Abstract
 
+- anchor-based和anchor-free方法主要区别是如果选择正负样本。如果使用选取同样的方式，回归一个box和point无太大差异
+- 提出 adaptive training sample selection(ATSS)根据统计自动选择正负样本
 
+### Introduction
+
+**Anchor-Free **有两种无需anchor的定位方式
+
+1. 【keypoint-based method】首先定位pre-defined或者self-learned关键点，然后关键点组合成bbox
+2. 【center-based method】使用中心点定位物体，然后预测中心点上下左右四个方向的距离来决定bbox边界
+
+**RetinaNet VS FCOS**
+
+1. **RetinaNet**对于每个位置若干anchors；**FCOS**只使用一个anchor point标记每个位置
+2. **RetinaNet**根据IoU决定正负样本；**FCOS**根据空间和大小的限制选择样本
+3. **RetinaNet**从anchor box回归一个bbox；**FCOS**根据anchor point定位object
+
+### Difference Analysis of Anchor-based and Anchor-free Detection
+
+**使用one anchor per location RetinaNet对比FCOS**
+
+- Classification
+	- anchor-based：正负样本选择根据IoU
+	- anchor-free：政府样本选择不用FPN level的scale range 
+- Regression
+	- anchor-based：回归(x,y,w,h)
+	- anchor-free：回归四个distance
+- Conclusion
+	- 两种方法最核心的区别是正负样本的选择
+
+![Screen Shot 2020-11-10 at 5.12.40 pm](assets/Screen Shot 2020-11-10 at 5.12.40 pm-5000089.png)
+
+![Screen Shot 2020-11-10 at 5.12.32 pm](assets/Screen Shot 2020-11-10 at 5.12.32 pm.png)
+
+![Screen Shot 2020-11-10 at 5.12.36 pm](assets/Screen Shot 2020-11-10 at 5.12.36 pm.png)
+
+![Screen Shot 2020-11-10 at 5.12.40 pm](assets/Screen Shot 2020-11-10 at 5.12.40 pm.png)
+
+![Screen Shot 2020-11-10 at 5.21.11 pm](assets/Screen Shot 2020-11-10 at 5.21.11 pm.png)
 
 ---
 
@@ -273,6 +310,10 @@ return ROI
 
 
 
+# Remote Sensing
+
+
+
 ## Rotation Detector
 
 1. OpenCV：角度定义为图像的width和x轴的角度
@@ -282,8 +323,6 @@ return ROI
 2. 最长边表示法：角度定义为图像的最长边和x轴的角度
 
 ![Screen Shot 2020-04-13 at 11.15.29 am](assets/Screen%20Shot%202020-04-13%20at%2011.15.29%20am.png)
-
-
 
 ## SCRDet: Towards More Robust Detection for Small, Cluttered and Rotated Objects（ICCV 2019）
 
@@ -371,7 +410,7 @@ return ROI
 ### Skew NMS
 
 1. keep the max IoU for proposals with an IoU larger than 0.7
-2. if all proposals have an IoU in the range [0.3, 0.7], keep the proposal with the minimum angle difference with respect to the ground truth (the angle difference should be less than π/12)
+2. if all proposals have an IoU in the range [0.3, 0.7], keep the proposal with the minimum angle difference with respect to the ground truth (the angle difference should be less than π/12==15 degree)
 
 ## $R^3$Det: Refined Single-Stage Detector with Feature Refinement for Rotating Object 
 

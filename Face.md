@@ -318,19 +318,19 @@ $$
 A-Softmax = -\ln \frac{e^{||x||cos \ m\theta_i}}{e^{||x||cos \ m\theta_i} + \sum_{j=1,j\ne i}^n e^{||x||cos \ \theta_j}}
 $$
 
-- **CosineFace (LM-Softmax)**：直接将余弦余量损失加到目标logit上，使得从衡量**角度距离**转变为**余弦距离**。与SphereFace相比，可以获得更好的性能，但允许更轻松地实现，并且减轻了softmax损失的联合监管的需求。
+- **CosineFace (LM-Softmax) [使用余弦距离]**：直接将余弦余量损失加到目标logit上，使得从衡量**角度距离**转变为**余弦距离**。与SphereFace相比，可以获得更好的性能，但允许更轻松地实现，并且减轻了softmax损失的联合监管的需求。
 
 $$
 LM-Softmax = -\ln \frac{e^{S(cos \ (\theta_{y_i})-m)}}{e^{S(cos \ (\theta_{y_i})-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
 $$
 
-- **AM-Softmax**: 对特征和参数进行L2正则化之后，在consine中引入余弦间隔。衡量**余弦距离**。同CosineFace同时间发布。
+- **AM-Softmax [使用余弦距离]**: 对特征和参数进行L2正则化之后，在consine中引入余弦间隔。衡量**余弦距离**。同CosineFace同时间发布。
 
 $$
 AM-Softmax = -\ln \frac{e^{S(cos \ \theta_{y_i}-m)}}{e^{S(cos \ \theta_{y_i}-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
 $$
 
-- **ArcFace**: 对特征和参数进行L2正则化之后，在consine中引入角度间隔。衡量**角度距离**
+- **ArcFace [使用角度距离]**: 对特征和参数进行L2正则化之后，在consine中引入角度间隔。衡量**角度距离**
 
   ![Screen Shot 2019-11-01 at 3.38.02 pm](assets/Screen%20Shot%202019-11-01%20at%203.38.02%20pm.png)
 

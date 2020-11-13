@@ -119,7 +119,7 @@ TVM为了解决高效计算的问题，提出了利用机器学习来进行自�
 
     (4) 对于concat层，将concat层的输入直接送入下面操作中，不单独进行concat后的输入再计算，相当于减少一次IO
 
-## Model Convert (模型转换)
+# Model Convert (模型转换)
 
 ### ONNX (Open Neural Network Exchange)
 
@@ -142,3 +142,7 @@ Problems：
 
 - set `allow_picle=True` can fix issue.
 
+# PyTorch 模型部署
+
+1. 利用RESTFUL借口配置服务器，处理网页的请求，自己编写API的接口（Flask）
+2. 将模型转换成ONNX形式，然后再转换成caffe2来利用C++的接口进行处理，Caffe2支持嵌入式操作
