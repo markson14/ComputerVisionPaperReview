@@ -234,6 +234,7 @@ class DepthSeperateConv(nn.Module):
 				self.depthwise_conv = nn.Conv2d(inp, 1, 3, 3, stride, bias=False)
         self.pointwise_conv = nn.Conv2d(1, oup, 1, 1, stride, bias=False)
         self.relu = nn.ReLU()
+        # 作用：梯度裁剪，移动端设备FLOAT16无法描述大精度，带来精度损失。
         self.relu6 = nn.ReLU6()
         self.bn = nn.BatchNorm2d()
         
@@ -249,12 +250,11 @@ class DepthSeperateConv(nn.Module):
         return x
 ```
 
-
-
 - **普通卷积**: 
+  
   - 参数量：$D_K^2 \times M \times N$  Dk是kernel的size  M是input channel，N是output channel
-  - 计算量：$D_K^2 \times M \times N \times D_F^2$  Df是输入feature map的大小
-
+- 计算量：$D_K^2 \times M \times N \times D_F^2$  Df是输入feature map的大小
+  
 - **可分离卷积:** 将一个卷积层拆分成多个
 
   - 空间可分离卷积：比如3x3的kernel可以分成一个3x1和一个1x3
@@ -315,6 +315,8 @@ class InvertedResidual(nn.Module):
             # pw-linear
             nn.Conv2d(hidden_dim, oup, 1, 1, 0, bias=False),
             nn.BatchNorm2d(oup),
+          	# 无ReLU6
+          	# nn.ReLU6()
         ])
         self.conv = nn.Sequential(*layers)
 
@@ -603,4 +605,17 @@ class SpatialAttention(nn.Module):
 ### Vision Transformer(VIT)
 
 ![Screen Shot 2020-10-04 at 9.04.02 pm](assets/Screen%20Shot%202020-10-04%20at%209.04.02%20pm.png)
+
+## TResNet: High Performance GPU-Dedicated Architecture
+
+### Abstract
+
+1. 介绍所有尝试过的实验
+2. 介绍TResNet
+
+### Refinements
+
+#### SpeaceToDepth STEM
+
+
 

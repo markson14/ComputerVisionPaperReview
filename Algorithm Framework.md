@@ -1011,9 +1011,9 @@ def nSumTarget(nums: List[int], n: int, start: int, target: int)->List[List[int]
 ```python
 class UF():
     # 将 p 和 q 连接
-    def(p: int, q: int) -> None
+    def union(p: int, q: int) -> None
     # 判断 p 和 q 是否连通
-    def(p: int , q: int ) -> bool
+    def connected(p: int , q: int ) -> bool
     # 返回图中有多少个连通分量
     def count() -> int
 ```
@@ -1046,9 +1046,9 @@ class UF():
         for i in range(n):
           	self.parent[i] = i
     # 将 p 和 q 连接
-    def(p: int, q: int) -> None
+    def union(p: int, q: int) -> None
     # 判断 p 和 q 是否连通
-    def(p: int , q: int ) -> bool
+    def connected(p: int , q: int ) -> bool
     # 返回图中有多少个连通分量
     def count() -> int
 ```

@@ -242,21 +242,22 @@ for ROI in ROIs:
 <img src="./assets/Screen%20Shot%202019-04-20%20at%2012.13.34%20pm.png" alt="Screen Shot 2019-04-20 at 12.13.34 pm" style="zoom: 60%;" />
 
 #### FPN+RPN
+- RPN的anchor设置会对应FPN输出的layer。例如FPN输出3层，anchor设置3种类型。每种类型的anchor在特定的FPN layer输出的feature map上做卷积运算，做到anchor大小和feature map大小相匹配。
 
 ![Screen Shot 2019-08-19 at 5.35.56 pm](assets/Screen%20Shot%202019-08-19%20at%205.35.56%20pm.png)
 
 #### **Results:**
 
-- FPN**(c)**对比原来取自**conv4**， **conv5** 的网络**(a)(b)**，Recall大大提升，特别是在**小物体**上
-- 对比实验**(d)**表示在没有top-down，只保留横向连接时(SSD)，效果与RPN差不多
-- **(e)** 表示没有横向连接，只有top-down结构时，效果比原来更差
-- 综上，**(f)**表示FPN中的横向连接和top-down模式都起到了很大作用
+- FPN(c)对比原来取自conv4， conv5 的网络(a)(b)，Recall大大提升，特别是在小物体上
+- 对比实验(d)表示在没有top-down，只保留横向连接时(SSD)，效果与RPN差不多
+- (e) 表示没有横向连接，只有top-down结构时，效果比原来更差
+- 综上，(f)表示FPN中的横向连接和top-down模式都起到了很大作用
 
 ![Screen Shot 2019-05-22 at 11.34.04 am](./assets/Screen%20Shot%202019-05-22%20at%2011.34.04%20am.png)
 
 ##  Scale-Aware Trident Networks for Object Detection (ICCV 2019)
 
-#### **:star2:HighLight :**
+#### :star2:HighLight :
 
 1. Scale-specific feature maps by using deformable Conv
 2. Scale-aware training：在BP时忽略不在范围内的bbox
@@ -432,11 +433,11 @@ for feature_maps in levels:
 
 ## You Only Look Once: Unified, Real-Time Object Detection (CVPR 2016)
 
-```pseudocode
+```python
 feature_vector = process(image)
 feature_tensor = up_sampling(feature_vector)
 for grid in feature_tensor:
-		class_scores, box = detector(grid)
+    class_scores, box = detector(grid)
 box_clean = NMS(box)
 ```
 
