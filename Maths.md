@@ -99,7 +99,7 @@ $$
 目标一 （最大化间隔）：\ \ \underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 \\
 目标二 （使样本分类正确）\ \ y_i(w^Tx_i+b)\ge1, i=1,2,3...
 $$
-稍微解释一下，w是超平面参数，目标一是从点到面的距离公式化简来的，具体不展开，目标二就相当于感知机，只是把大于等于0进行缩放变成了大于等于1，为了后面的推导方便。有了两个目标，写在一起，就变成了svm的终极目标：
+稍微解释一下，w是超平面参数，目标一是从点到面的距离公式化简来的；目标二就相当于感知机，只是把大于等于0进行缩放变成了大于等于1，为了后面的推导方便。有了两个目标，写在一起，就变成了svm的终极目标：
 $$
 终极目标：\ \ \underset{w,b}{\operatorname{min}}\frac{1}{2}||w||^2 \\
 s.t. \ y_i(w^Tx_i+b)\ge1, \forall i
@@ -294,7 +294,7 @@ Require: Sync period k, slow weights step size alpha, optimizer A
 ### Comparison
 
 - Adam收敛问题
-  - 由于RMSProp和Adam的二阶动量是固定时间窗口的累积，随着时间窗口变化，遇到的数据可能发生巨变，是的$V_t$可能会时大时小，不是单调变化。这在后期的训练有可能导致模型无法收敛。
+  - 由于RMSProp和Adam的二阶动量是固定时间窗口的累积，随着时间窗口变化，遇到的数据可能发生巨变，$V_t$ 可能会时大时小，不是单调变化。这在后期的训练有可能导致模型无法收敛。
     - 修正方法：$V_t = max(\beta_2 \cdot V_{t-1} + (1 - \beta_2) \cdot g_t^2,   V_{t-1})$
 - 错过全剧最优解问题
   - **自适应学习率算法可能会对前期的特征过拟合，后期才出现的特征难以纠正前期的拟合效果**
@@ -318,7 +318,7 @@ Require: Sync period k, slow weights step size alpha, optimizer A
 
 **目的:**
 
-- 原论文：BN是为了减少 Internal Convariate Shift（训练集数据分布与预测集数据分布不一致）
+- 原论文：BN是为了减少 Internal Convariate Shift（**训练集数据分布与预测集数据分布不一致**）
 - MIT新论文：BN的输入归一化使得优化梯度更加平滑，震荡更少。
 
 **优势：**

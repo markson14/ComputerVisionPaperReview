@@ -191,12 +191,11 @@ $$
 
 ![Screen Shot 2020-10-09 at 11.01.00 am](assets/Screen%20Shot%202020-10-09%20at%2011.01.00%20am.png)
 
-- 将2D的人脸映射到3D模型上，再将3D模型解码为2D图片(Mesh Decoder)，然后计算经过编解码的图片和原始图片的差别
+- **Mesh decoder是基于快速滤波的图卷积**
+- **通过图卷积预测出形状和纹理参数后，使用一个有效的3D差分mesh renderer将该3D mesh映射到二维图像平面得到一张2D渲染的人脸。该过程需要用到相机参数和补光参数。至此，可以像素级别比较渲染人脸和原来人脸之间的差异。**
   - 普通卷积参数：$Kernel_H \times Kernel_w \times Channel_{in} \times Channel_{out}$
   - GCN：$K \times Channels_{in} \times Channels_{out}$
-
 - `neighbour distance is calculated on the graph by counting the minimum number of edges connecting two vertices. `
-
 - 3D解码至2D通过$face\R(D_{PST} , P_{cam}, P_{ill})$ , 分别是色彩范围，相机参数和灯光参数 
 
 ### Implement Details
@@ -270,14 +269,13 @@ $$
 
 ### **Weakness of Common Mobile Networks for Face Verification**
 
-- 全局平均池化对FMap-end(output feature map of the last conv)采用平等权重。在实际中，脸部更偏向中心，边角权重可以弱化
-- Flatten FMap-end后的维度太高，所以采用了GAP。GAP**在人脸识别项目中**又会导致infer的准确率下降 (原因可能是人脸识别项目更加喜欢model overfiting，因为输入的图片非常干净规范，希望能够过拟合人和对应的标签)
+:bangbang:**全局平均池化对FMap-end(output feature map of the last conv)采用平等权重。在实际中，脸部更偏向中心，边角权重可以弱化**
 
 ### **Global Depthwise Convolution**
 
 - Global Depthwise Convolution：kernel size与最后一层feature map大小相同
 
-- 使用global depthwise conv + 1x1 Conv来进行通道缩减 **替换** 全局平均池化
+- 使用global depthwise conv + 1x1 Conv来 **替换** 全局平均池化
 
 ![Screen Shot 2019-12-03 at 4.59.12 pm](assets/Screen%20Shot%202019-12-03%20at%204.59.12%20pm.png)
 
@@ -321,7 +319,7 @@ $$
 - **CosineFace (LM-Softmax) [使用余弦距离]**：直接将余弦余量损失加到目标logit上，使得从衡量**角度距离**转变为**余弦距离**。与SphereFace相比，可以获得更好的性能，但允许更轻松地实现，并且减轻了softmax损失的联合监管的需求。
 
 $$
-LM-Softmax = -\ln \frac{e^{S(cos \ (\theta_{y_i})-m)}}{e^{S(cos \ (\theta_{y_i})-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
+LM-Softmax = -\ln \frac{e^{S(cos \ \theta_{y_i}-m)}}{e^{S(cos \ \theta_{y_i}-m)} + \sum_{j=1,j\ne i}^n e^{S(cos \ \theta_{j})}}
 $$
 
 - **AM-Softmax [使用余弦距离]**: 对特征和参数进行L2正则化之后，在consine中引入余弦间隔。衡量**余弦距离**。同CosineFace同时间发布。

@@ -907,7 +907,7 @@ def slidingWindow(s: str, t: str) {
 class Solution:
     def removeCoveredIntervals(self, intervals: List[List[int]]) -> int:
         n = len(intervals)
-        # 优先对left升序，其次对left降序
+        # 优先对left升序，其次对right降序
         intervals.sort(key=lambda x: (x[0], -x[1]))
         left, right = intervals[0][0], intervals[0][1]
         res = 0
@@ -984,6 +984,7 @@ def nSumTarget(nums: List[int], n: int, start: int, target: int)->List[List[int]
                 while lo < hi and nums[hi] == right: hi-=1
             else:
                 res.append([left, right])
+                # 过滤重复值
                 while lo < hi and nums[lo] == left: lo+=1
                 while lo < hi and nums[hi] == right: hi-=1
     else:

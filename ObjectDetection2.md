@@ -83,7 +83,7 @@ return ROI
 
 ### Abstract
 
-- anchor-based和anchor-free方法主要区别是如果选择正负样本。如果使用选取同样的方式，回归一个box和point无太大差异
+- anchor-based和anchor-free方法主要区别是如何选择正负样本。如果使用选取同样的方式，回归一个box和point无太大差异
 - 提出 adaptive training sample selection(ATSS)根据统计自动选择正负样本
 
 ### Introduction
@@ -105,7 +105,7 @@ return ROI
 
 - Classification
 	- anchor-based：正负样本选择根据IoU
-	- anchor-free：政府样本选择不用FPN level的scale range 
+	- anchor-free：正负样本选择用FPN level的scale range 
 - Regression
 	- anchor-based：回归(x,y,w,h)
 	- anchor-free：回归四个distance
@@ -458,102 +458,3 @@ where $\mathcal{L}_{match}(y_i, \hat{y}_{\sigma(i)})$ is a pair-wise matching co
 #### Architecture
 
 ![Screen Shot 2020-11-05 at 4.32.10 pm](assets/Screen%20Shot%202020-11-05%20at%204.32.10%20pm.png)
-
----
-
-# Few-shot Detection
-
-### General ideas
-
-1. Re-sampling Methods: 
-
-   - Oversampling
-     - High potential risk of overfitting
-   - Undersampling
-     - Infleasible in extreme long-tailed datasets
-
-   - Class-balanced sampling
-
-   - decoupling training schema: first learns the representations and classifier jointly, then obtains a balanced classifier by re-training the classifier with class-balanced sampling
-
-2. Re-weighting Methods: Assign weights for different training samples
-
-   - Online hard example mining
-
-3. Feature Manipulation: 
-
-   - Range loss enlarges inter-classes distance and reduces intra classes variations simultaneously
-   - Augments the feature space of tail classes by transferring the feature variance of regular classes that have sufficient training samples
-
-## Few-shot Object Detection via Feature Reweighting
-
-### Abstract
-
-- Meta feature learner和reweighting module within one-stage detector
-
-### Architecture
-
-![Screen Shot 2020-07-06 at 10.47.34 am](assets/Screen%20Shot%202020-07-06%20at%2010.47.34%20am.png)
-
-
-
-## Overcoming Classifier Imbalance for Long-tail Object Detection with Balanced Group Softmax (CVPR2020)
-
-![Screen Shot 2020-09-17 at 3.42.51 pm](assets/Screen%20Shot%202020-09-17%20at%203.42.51%20pm.png)
-
-### Abstract
-
-- 由于long tail尾部classes的分类的weight norm较小，原因是在训练class j的时候，会提升class j的weight norm，降低others。所以导致tail classes仅有的少量数据训练，weight norm远不及head classes。
-- 提出Balanced Group Softmax来缓解目前问题
-
-### Introduction
-
-```markdown
-1. Through comprehensive analysis, we reveal the rea- son why existing models perform not well for long-tail detection, i.e. their classifiers are imbalanced and not trained equally well, reflected by the observed imbal- anced classifier weight norms.
-
-2. We propose a simple yet effective balanced group soft- max module to address the problem. It can be easily combined with object detection and instance segmen- tation frameworks to improve their long-tail recogni- tion performance.
-
-3. We conduct extensive evaluations with state-of-the-art long-tail classification methods for object detection. Such benchmarking not only deepens our understand- ings of these methods as well as the unique challenges of long-tail detection, but also provides reliable and strong baselines for future research in this direction.
-```
-
-### Long-tail classification
-
-- Re-sampling: 过采样，降采样，类均衡采样。
-  - 缺点：多余的训练时间，对tail classes过拟合
-- Cost-sensitive：平均每个classes的权重或增大tail classes权重
-  - 缺点：参数过多难以调试
-
-### Balanced Group Softmax
-
-![Screen Shot 2020-09-17 at 3.32.03 pm](assets/Screen%20Shot%202020-09-17%20at%203.32.03%20pm.png)
-
-#### Group Softmax
-
-#### Calbration via category “others”
-
-## Equalization Loss for Long-Tailed Object Recognition (CVPR 2020)
-
-### Abstract
-
-- 该文中，将positive sample of one category视作另外category的negative sample，使其获得更多的负梯度。
-- 提出equalization loss，其能从梯度反向传播与网络更新中保护学习rare categories
-
-### Introduction
-
-先前的工作主要从1. Sampling的方法解决long-tail class的问题。2. loss的方法主要是解决前后景类别不均衡而提出的(focal loss，面临问题是前后景数量差距过大，前景object的classes number分类还是均衡的)，在解决不同前景的长尾数据集（前景object的classes number十分不均衡）中依旧是个难题
-
-我们主要的贡献有
-
-1. 提出创新的角度处理long tail问题：抑制rare categories的之间的竞争，这个导致poor performance的重要原因
-2. 在图像识别和图像分割中也做了消融实验证明方法的可行性和鲁棒性
-
-### Equalization Loss
-
-$$
-L_{EQL} = -\sum_{j=1}^Cw_j\log(\hat {p_j}) \\
-w_j = 1-E(r)T_\lambda(f_j)(1-y_j) \\
-TR(\lambda) = \frac{\sum_j^CT_\lambda(f_j)N_j}{\sum_j^CN_j}
-$$
-
-1. 对于小于threshold的rare categories忽略作为负样本的抑制梯度更新
-2. 不忽略背景图片的梯度更新
