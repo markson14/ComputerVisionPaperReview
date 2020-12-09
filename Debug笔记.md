@@ -232,7 +232,9 @@ x.transpose((0,2,3,1)).reshape((-1,1)) #reshape
 # CUDA
 cat /usr/local/cuda/version.txt
 #CUDNN
-cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -
+cat /usr/local/cuda/include/cudnn.h | grep CUDNN_MAJOR -A 2
+
+
 ```
 
 ### maskrcnn-benchmark

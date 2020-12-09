@@ -122,6 +122,57 @@ return ROI
 
 ![Screen Shot 2020-11-10 at 5.21.11 pm](assets/Screen Shot 2020-11-10 at 5.21.11 pm.png)
 
+## Foreground-Background Imbalance Problem in Deep Object Detectors: A Review
+
+### Abstract
+
+1. 列举object detector重的imbalance问题
+2. 将目前解决方法分成两类
+	- sampling heurestics
+	- non-sampling scheme
+3. 在COCO中比较SOTA方法
+
+### Introduction
+
+目标检测是许多计算机视觉高级任务中的基础子任务：instance segmentation, image caption, scene understanding。也在现实世界许多任务中有重要作用：autonomous driving, robotic vision, video surveillance。
+
+### Solution
+
+![Screen Shot 2020-11-30 at 2.32.54 pm](assets/Screen%20Shot%202020-11-30%20at%202.32.54%20pm.png)
+
+#### Sampling heuristics
+
+改变每个样本的对梯度回传的贡献(contribution of each sample)，增加rare-foreground object的权重。输出是第i个样本的权重
+$$
+L_i^{cls} = \Omega(G,E,P,i)CE(p_i,q_i)
+$$
+
+- **hard sampling**
+
+	$\Omega(G,E,P,i)={0, 1}$ 代表有mini-batch bias sampling，OHEM和IoU-Balanced Sampling
+
+- **soft sampling**
+
+	$\Omega(G,E,P,i)$ 在训练中进行缩放，代表有focal loss，gradient harmonizing machanism（GHM），Importance-based sampling reweighting（ISR）
+
+#### Non-sampling scheme
+
+- **Ranking-based Loss function**
+
+	**AP Loss** ：提出用AP做优化监督，AP是不可微。通过线性变换和非线性不可微激活函数将AP -> pairwise difference -> AP Loss
+
+	**DR Loss**：当作是一个排序任务，对sample做reweighting来从中获得worst-case相对应的分布，使得loss更加注重于前后景的decision boundary区分
+
+- **Unbiased Learning Mechanism**
+
+	**Residual Object**: 是一种完全基于学习的算法，利用objectness-related module来学习逐步处理非均衡问题
+
+	**Sampling Free**: 
+
+### Result
+
+![Screen Shot 2020-11-30 at 4.10.07 pm](assets/Screen%20Shot%202020-11-30%20at%204.10.07%20pm.png)
+
 ---
 
 # Anchor Free
